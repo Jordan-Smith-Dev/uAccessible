@@ -14,8 +14,8 @@
     <PackageTags>umbraco;umbraco-marketplace;accessibility;a11y;wcag</PackageTags>
     <Authors>Jordan Smith</Authors>
     <Copyright>$([System.DateTime]::UtcNow.ToString(`yyyy`)) © Jordan Smith</Copyright>
-    <PackageProjectUrl>https://github.com/Jordan-Smith-Dev/Umbraco.Community.uAccessible</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/Jordan-Smith-Dev/Umbraco.Community.uAccessible</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/Jordan-Smith-Dev/uAccessible</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Jordan-Smith-Dev/uAccessible</RepositoryUrl>
     <PackageReadmeFile>README_nuget.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

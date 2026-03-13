@@ -7,7 +7,7 @@
     "Category": "Backoffice",
     "Description": "Accessibility audit reports for your Umbraco content pages, directly in the backoffice. Powered by axe-core and WCAG 2.0/2.1/2.2 (Levels A & AA).",
     "LicenseTypes": [ "MIT" ],
-    "IssueTrackerUrl": "https://github.com/Jordan-Smith-Dev/Umbraco.Community.uAccessible/issues",
+    "IssueTrackerUrl": "https://github.com/Jordan-Smith-Dev/uAccessible/issues",
     "PackageType": "Package",
     "Tags": ["umbraco", "accessibility", "a11y", "wcag", "axe-core", "audit"],
     "Title": "uAccessible"

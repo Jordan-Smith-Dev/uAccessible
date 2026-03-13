@@ -2,7 +2,7 @@
 
 [![Downloads](https://img.shields.io/nuget/dt/Umbraco.Community.uAccessible?color=cc9900)](https://www.nuget.org/packages/Umbraco.Community.uAccessible/)
 [![NuGet](https://img.shields.io/nuget/vpre/Umbraco.Community.uAccessible?color=0273B3)](https://www.nuget.org/packages/Umbraco.Community.uAccessible)
-[![GitHub license](https://img.shields.io/github/license/Jordan-Smith-Dev/Umbraco.Community.uAccessible?color=8AB803)](LICENSE)
+[![GitHub license](https://img.shields.io/github/license/Jordan-Smith-Dev/uAccessible?color=8AB803)](LICENSE)
 
 Accessibility audit reports for your Umbraco content pages — directly inside the backoffice.
 
@@ -100,7 +100,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for local development setup.
 
 ## Issues
 
-Please report bugs or feature requests at [GitHub Issues](https://github.com/Jordan-Smith-Dev/Umbraco.Community.uAccessible/issues).
+Please report bugs or feature requests at [GitHub Issues](https://github.com/Jordan-Smith-Dev/uAccessible/issues).
 
 ## License
 
