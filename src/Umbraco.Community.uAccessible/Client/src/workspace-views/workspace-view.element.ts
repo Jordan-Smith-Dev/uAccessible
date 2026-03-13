@@ -126,10 +126,11 @@ function effortFor(impact: string | null): string {
 
 const svgExternal = html`<svg class="btn-icon" xmlns="http://www.w3.org/2000/svg"
     fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-    stroke-width="1.75" viewBox="0 0 24 24">
-    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-    <polyline points="15 3 21 3 21 9"/>
-    <line x1="10" y1="14" x2="21" y2="3"/>
+    stroke-width="2" viewBox="0 0 24 24">
+    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+    <path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" />
+    <path d="M11 13l9 -9" />
+    <path d="M15 4h5v5" />
 </svg>`;
 
 const svgRotate = html`<svg class="btn-icon" xmlns="http://www.w3.org/2000/svg"
@@ -141,25 +142,28 @@ const svgRotate = html`<svg class="btn-icon" xmlns="http://www.w3.org/2000/svg"
 
 const svgStatViolation = html`<svg xmlns="http://www.w3.org/2000/svg" fill="none"
     stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-    stroke-width="1.75" viewBox="0 0 24 24">
-    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-    <line x1="12" y1="9" x2="12" y2="13"/>
-    <line x1="12" y1="17" x2="12.01" y2="17"/>
+    stroke-width="2" viewBox="0 0 24 24">
+    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+    <path d="M12 9v4" />
+    <path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.871l-8.106 -13.534a1.914 1.914 0 0 0 -3.274 0z" />
+    <path d="M12 16h.01" />
 </svg>`;
 
 const svgStatPass = html`<svg xmlns="http://www.w3.org/2000/svg" fill="none"
     stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-    stroke-width="1.75" viewBox="0 0 24 24">
-    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-    <polyline points="22 4 12 14.01 9 11.01"/>
+    stroke-width="2" viewBox="0 0 24 24">
+    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+    <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+    <path d="M9 12l2 2l4 -4" />
 </svg>`;
 
 const svgStatReview = html`<svg xmlns="http://www.w3.org/2000/svg" fill="none"
     stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-    stroke-width="1.75" viewBox="0 0 24 24">
-    <circle cx="12" cy="12" r="10"/>
-    <line x1="12" y1="8" x2="12" y2="12"/>
-    <line x1="12" y1="16" x2="12.01" y2="16"/>
+    stroke-width="2" viewBox="0 0 24 24">
+    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+    <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" />
+    <path d="M12 9h.01" />
+    <path d="M11 12h1v4h1" />
 </svg>`;
 
 const svgStatRules = html`<svg xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -175,8 +179,9 @@ const svgStatRules = html`<svg xmlns="http://www.w3.org/2000/svg" fill="none"
 
 const svgBolt = html`<svg xmlns="http://www.w3.org/2000/svg" fill="none"
     stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-    stroke-width="1.75" viewBox="0 0 24 24">
-    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+    stroke-width="2" viewBox="0 0 24 24">
+    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+    <path d="M13 3l0 7l6 0l-8 11l0 -7l-6 0l8 -11" />
 </svg>`;
 
 const svgExclamationCircle = html`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="reason-icon">
@@ -205,6 +210,7 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
     @state() private _error: string | null = null;
     @state() private _collapsed = new Set<string>();
     @state() private _collapsedIncomplete = new Set<string>();
+    @state() private _collapsedPasses = new Set<string>();
     @state() private _activeImpact: string | null = null;
     @state() private _allCollapsed = false;
     @state() private _passesExpanded = false;
@@ -250,6 +256,7 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
         this._error   = null;
         this._collapsed = new Set();
         this._collapsedIncomplete = new Set();
+        this._collapsedPasses = new Set();
         this._activeImpact = null;
         this._allCollapsed = false;
         this._passesExpanded = false;
@@ -567,7 +574,8 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
                                 xmlns="http://www.w3.org/2000/svg" fill="none"
                                 stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                                 stroke-width="2" viewBox="0 0 24 24">
-                                <polyline points="6 9 12 15 18 9"/>
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <path d="M6 9l6 6l6 -6" />
                             </svg>
                         </span>
                     </uui-button>
@@ -626,10 +634,11 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
             <h4 class="section-heading section-heading--violations">
                 <svg class="section-heading__icon" xmlns="http://www.w3.org/2000/svg" fill="none"
                     stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                    stroke-width="1.75" viewBox="0 0 24 24">
-                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                    <line x1="12" y1="9" x2="12" y2="13"/>
-                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M12 9v4" />
+                    <path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.871l-8.106 -13.534a1.914 1.914 0 0 0 -3.274 0z" />
+                    <path d="M12 16h.01" />
                 </svg>
                 Accessibility violations
                 <span class="section-heading-count">
@@ -650,66 +659,16 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
                 </div>
             `}
 
-            <!-- ── Passing checks ── -->
-            ${this._result.passingChecks?.length > 0 ? html`
-                <div class="passes-section">
-                    <button class="passes-toggle" @click=${() => { this._passesExpanded = !this._passesExpanded; }}>
-                        <svg class="section-heading__icon passes-toggle__icon" xmlns="http://www.w3.org/2000/svg" fill="none"
-                            stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                            stroke-width="1.75" viewBox="0 0 24 24">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                            <polyline points="22 4 12 14.01 9 11.01"/>
-                        </svg>
-                        <span class="passes-toggle__label">
-                            Passing checks
-                        </span>
-                        <span class="passes-toggle__count">${this._result.passingChecks.length} rule${this._result.passingChecks.length !== 1 ? 's' : ''} passed</span>
-                        <svg class="btn-icon passes-toggle__chevron ${this._passesExpanded ? 'chevron-icon--up' : ''}"
-                            xmlns="http://www.w3.org/2000/svg" fill="none"
-                            stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                            stroke-width="2" viewBox="0 0 24 24">
-                            <polyline points="6 9 12 15 18 9"/>
-                        </svg>
-                    </button>
-                    ${this._passesExpanded ? html`
-                        <div class="passes-list">
-                            ${this._result.passingChecks.map(v => html`
-                                <div class="pass-item">
-                                    <div class="pass-item__main">
-                                        <svg class="pass-item__icon" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                            stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                            stroke-width="2" viewBox="0 0 24 24">
-                                            <polyline points="20 6 9 17 4 12"/>
-                                        </svg>
-                                        <div class="pass-item__body">
-                                            <span class="pass-item__help">${v.help}</span>
-                                            <span class="pass-item__meta">
-                                                <code class="rule-id">${v.id}</code>
-                                                <span class="pass-item__count">${v.nodes.length} element${v.nodes.length !== 1 ? 's' : ''} checked</span>
-                                            </span>
-                                        </div>
-                                    </div>
-                                    ${this._wcagTags(v.tags).length > 0 ? html`
-                                        <div class="pass-item__tags">
-                                            ${this._wcagTags(v.tags).map(tag => html`<span class="tag">${tag}</span>`)}
-                                        </div>
-                                    ` : nothing}
-                                </div>
-                            `)}
-                        </div>
-                    ` : nothing}
-                </div>
-            ` : nothing}
-
             <!-- ── Incomplete / needs review ── -->
             ${incomplete.length > 0 ? html`
                 <h4 class="section-heading section-heading--review" style="margin-top: var(--uui-size-layout-1)">
                     <svg class="section-heading__icon" xmlns="http://www.w3.org/2000/svg" fill="none"
                         stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                        stroke-width="1.75" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="10"/>
-                        <line x1="12" y1="8" x2="12" y2="12"/>
-                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                        stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" />
+                        <path d="M12 9h.01" />
+                        <path d="M11 12h1v4h1" />
                     </svg>
                     Needs manual review
                     <span class="section-heading-count">
@@ -723,6 +682,40 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
                 <div class="violations-list" style="margin-top: var(--uui-size-space-3)">
                     ${incomplete.map(v => this._renderViolation(v, 'incomplete'))}
                 </div>
+            ` : nothing}
+
+            <!-- ── Passing checks ── -->
+            ${this._result.passingChecks?.length > 0 ? html`
+                <h4 class="section-heading section-heading--passes" style="margin-top: var(--uui-size-layout-1)">
+                    <svg class="section-heading__icon" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                        stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+                        <path d="M9 12l2 2l4 -4" />
+                    </svg>
+                    Passing checks
+                    <span class="section-heading-count">
+                        (<strong>${this._result.passingChecks.length}</strong>
+                        rule${this._result.passingChecks.length !== 1 ? 's' : ''} passed)
+                    </span>
+                    <button class="passes-collapse-btn" @click=${() => { this._passesExpanded = !this._passesExpanded; }}
+                        title="${this._passesExpanded ? 'Collapse passing checks' : 'Expand passing checks'}">
+                        ${this._passesExpanded ? 'Collapse' : 'Show'}
+                        <svg class="btn-icon chevron-icon ${this._passesExpanded ? 'chevron-icon--up' : ''}"
+                            xmlns="http://www.w3.org/2000/svg" fill="none"
+                            stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                            stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <path d="M6 9l6 6l6 -6" />
+                        </svg>
+                    </button>
+                </h4>
+                ${this._passesExpanded ? html`
+                    <div class="violations-list">
+                        ${this._result.passingChecks.map(v => this._renderPassingCheck(v))}
+                    </div>
+                ` : nothing}
             ` : nothing}
         `;
     }
@@ -766,7 +759,8 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
                             xmlns="http://www.w3.org/2000/svg" fill="none"
                             stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                             stroke-width="2" viewBox="0 0 24 24">
-                            <polyline points="6 9 12 15 18 9"/>
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <path d="M6 9l6 6l6 -6" />
                         </svg>
                     </span>
                 </uui-button>
@@ -824,6 +818,91 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
                                 </div>
                             `)}
                         </div>
+                    </div>
+                ` : nothing}
+            </uui-box>
+        `;
+    }
+
+    private _renderPassingCheck(v: ViolationDetail) {
+        const isCollapsed = this._collapsedPasses.has(v.id);
+        const wcagTags = this._wcagTags(v.tags);
+
+        return html`
+            <uui-box class="block-box block-box--passes${isCollapsed ? ' block-box--collapsed' : ''}">
+                <div slot="headline" class="block-headline">
+                    <span class="block-headline__text">${v.help}</span>
+                    ${wcagTags.length > 0 ? html`
+                        <div class="block-headline__tags">
+                            ${wcagTags.map(tag => html`<span class="tag">${tag}</span>`)}
+                        </div>
+                    ` : nothing}
+                </div>
+
+                <uui-button
+                    slot="header-actions"
+                    look="outline"
+                    compact
+                    @click=${() => { this._collapsedPasses = this._toggleItem(v.id, this._collapsedPasses); }}>
+                    <span class="btn-content">
+                        ${isCollapsed ? 'Expand' : 'Collapse'}
+                        <svg class="btn-icon chevron-icon ${isCollapsed ? 'chevron-icon--up' : ''}"
+                            xmlns="http://www.w3.org/2000/svg" fill="none"
+                            stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                            stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <path d="M6 9l6 6l6 -6" />
+                        </svg>
+                    </span>
+                </uui-button>
+
+                ${!isCollapsed ? html`
+                    <div class="violation-body">
+                        <div class="violation-desc-row">
+                            <code class="rule-id">${v.id}</code>
+                            <p class="violation-description">${v.description}</p>
+                            <uui-button
+                                look="primary"
+                                compact
+                                href="${v.helpUrl}"
+                                target="_blank"
+                                rel="noopener noreferrer">
+                                <span class="btn-content">Learn more ${svgExternal}</span>
+                            </uui-button>
+                        </div>
+                        ${v.nodes.length > 0 ? html`
+                            <h5 class="nodes-heading">
+                                <span>${v.nodes.length} element${v.nodes.length === 1 ? '' : 's'} checked</span>
+                            </h5>
+                            <div class="nodes-list">
+                                ${v.nodes.map((node, i) => html`
+                                    <div class="node">
+                                        <div class="node__header">
+                                            <span class="node__index" style="background: #27ae60; color: #fff;">${i + 1}</span>
+                                        </div>
+                                        <div class="node__content">
+                                            <span class="node__html-label">PASSING CODE</span>
+                                            <pre class="node__html"><code>${node.html}</code></pre>
+                                            ${this._isSpecificSelector(node.target) ? html`
+                                                <div class="node__selector">
+                                                    <span class="node__selector-label">CSS SELECTOR</span>
+                                                    <div class="node__selector-body">
+                                                        <pre class="node__selector-code"><code>${node.target}</code></pre>
+                                                        <uui-button
+                                                            compact
+                                                            look="outline"
+                                                            title="Copy selector"
+                                                            @click=${() => navigator.clipboard.writeText(node.target)}>
+                                                            Copy
+                                                        </uui-button>
+                                                    </div>
+                                                </div>
+                                            ` : nothing}
+                                        </div>
+                                    </div>
+                                `)}
+                            </div>
+                        ` : nothing}
                     </div>
                 ` : nothing}
             </uui-box>
@@ -1576,118 +1655,39 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
 
         /* ── Passing checks ──────────────────────────────────────── */
 
-        .passes-section {
-            margin: var(--uui-size-layout-1) 0;
+        .section-heading--passes {
+            color: #27ae60;
+            border-bottom-color: rgba(39, 174, 96, 0.3);
         }
 
-        .passes-toggle {
-            display: flex;
+        .passes-collapse-btn {
+            display: inline-flex;
             align-items: center;
-            gap: var(--uui-size-space-2);
-            width: 100%;
-            padding: var(--uui-size-space-3) var(--uui-size-space-4);
-            background: color-mix(in srgb, #27ae60 8%, transparent);
-            border: 1px solid color-mix(in srgb, #27ae60 30%, transparent);
+            gap: 4px;
+            margin-left: auto;
+            padding: 3px 10px;
+            background: none;
+            border: 1px solid rgba(39, 174, 96, 0.4);
             border-radius: var(--uui-border-radius, 3px);
-            cursor: pointer;
+            color: #27ae60;
+            font-size: 12px;
+            font-weight: 600;
             font-family: inherit;
-            text-align: left;
+            cursor: pointer;
             transition: background 0.15s ease;
         }
 
-        .passes-toggle:hover {
-            background: color-mix(in srgb, #27ae60 14%, transparent);
+        .passes-collapse-btn:hover {
+            background: rgba(39, 174, 96, 0.08);
         }
 
-        .passes-toggle__icon {
-            color: #1a7a4a;
+        .block-box--passes::part(header) {
+            background-color: rgba(39, 174, 96, 0.08);
         }
 
-        .passes-toggle__chevron {
-            color: #1a7a4a;
-            flex-shrink: 0;
-            transition: transform 0.2s ease;
-        }
-
-        .passes-toggle__label {
-            font-size: 15px;
-            font-weight: 700;
-            color: #1a7a4a;
-            flex: 1;
-        }
-
-        .passes-toggle__count {
+        .pass-node-count {
             font-size: 12px;
-            font-weight: 700;
-            color: #1a7a4a;
-            background: color-mix(in srgb, #27ae60 18%, transparent);
-            padding: 2px 10px;
-            border-radius: 99px;
-        }
-
-        .passes-list {
-            display: flex;
-            flex-direction: column;
-            gap: var(--uui-size-space-2);
-            margin-top: var(--uui-size-space-2);
-        }
-
-        .pass-item {
-            display: flex;
-            flex-direction: column;
-            gap: var(--uui-size-space-2);
-            padding: var(--uui-size-space-3) var(--uui-size-space-4);
-            background: var(--uui-color-surface, #fff);
-            border: 1px solid var(--uui-color-border, #d8d7d9);
-            border-radius: var(--uui-border-radius, 3px);
-            border-left: 3px solid #27ae60;
-        }
-
-        .pass-item__main {
-            display: flex;
-            align-items: flex-start;
-            gap: var(--uui-size-space-3);
-        }
-
-        .pass-item__icon {
-            flex-shrink: 0;
-            width: 16px;
-            height: 16px;
-            color: #27ae60;
-            margin-top: 1px;
-        }
-
-        .pass-item__body {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            min-width: 0;
-        }
-
-        .pass-item__help {
-            font-size: 13px;
-            color: var(--uui-color-text, #1a1a1a);
-            line-height: 1.4;
-        }
-
-        .pass-item__meta {
-            display: flex;
-            align-items: center;
-            gap: var(--uui-size-space-2);
-            flex-wrap: wrap;
-        }
-
-        .pass-item__count {
-            font-size: 11px;
             color: var(--uui-color-text-alt, #6b7280);
-        }
-
-        .pass-item__tags {
-            display: flex;
-            align-items: center;
-            gap: var(--uui-size-space-1);
-            flex-wrap: wrap;
-            padding-left: calc(16px + var(--uui-size-space-3));
         }
     `;
 }
