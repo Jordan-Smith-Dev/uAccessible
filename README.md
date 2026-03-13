@@ -9,6 +9,8 @@ Accessibility audit reports for your Umbraco content pages — directly inside t
 
 uAccessible adds an **Accessibility** tab to every content node workspace. Clicking it launches a headless Chromium browser, runs a full [axe-core](https://github.com/dequelabs/axe-core) audit against the last published version of the page, and returns a graded report with violations, remediation guidance, WCAG success criteria, and affected HTML elements — without leaving the backoffice.
 
+![uAccessible workspace tab showing accessibility audit results](docs/uAccessible_preview-001.png)
+
 ## Features
 
 - **Accessibility workspace tab** — audit the page you're editing without leaving the content node
@@ -71,6 +73,13 @@ For a **Release** build, substitute `Debug` with `Release` in the path above.
 
 No `appsettings.json` changes or additional configuration required. Restart your site and the **Accessibility** tab will appear on every content node.
 
+## Usage
+
+1. Open any **published** content node in the Umbraco backoffice
+2. Click the **Accessibility** tab
+3. uAccessible resolves the published URL, launches a headless Chromium browser, and runs a full axe-core scan
+4. Results are returned immediately as a graded report — violations, manual review items, and passing checks are all listed with full detail
+
 ## CI/CD & production deployments
 
 Add the Chromium install step to your pipeline so it runs once after each new deployment:
@@ -89,12 +98,9 @@ Add the Chromium install step to your pipeline so it runs once after each new de
 
 > **Note:** Playwright spins up a real Chromium process for each scan. Ensure your production server has sufficient memory headroom (typically 512 MB+). On Linux, `--with-deps` installs the required system libraries automatically.
 
-## How it works
+## Screenshots
 
-1. You open a content node in the Umbraco backoffice and click the **Accessibility** tab.
-2. uAccessible resolves the node's published URL via Umbraco's URL provider.
-3. A headless Chromium browser loads the live published page and runs an axe-core audit.
-4. Results are returned immediately as a structured report — no background jobs or scheduled tasks involved.
+![uAccessible workspace tab](docs/uAccessible_preview-001.png)
 
 ## Contributing
 
