@@ -1,0 +1,62 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <StaticWebAssetBasePath>/</StaticWebAssetBasePath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Product>Umbraco.Community.uAccessible</Product>
+    <PackageId>Umbraco.Community.uAccessible</PackageId>
+    <Title>uAccessible</Title>
+    <Description>Accessibility audit reports for your Umbraco content pages, directly in the backoffice.</Description>
+    <PackageTags>umbraco;umbraco-marketplace;accessibility;a11y;wcag</PackageTags>
+    <Authors>Jordan Smith</Authors>
+    <Copyright>$([System.DateTime]::UtcNow.ToString(`yyyy`)) © Jordan Smith</Copyright>
+    <PackageProjectUrl>https://github.com/Jordan-Smith-Dev/Umbraco.Community.uAccessible</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Jordan-Smith-Dev/Umbraco.Community.uAccessible</RepositoryUrl>
+    <PackageReadmeFile>README_nuget.md</PackageReadmeFile>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>uAccessible_logo.png</PackageIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Umbraco.Cms.Web.Website" Version="17.0.0" />
+    <PackageReference Include="Umbraco.Cms.Web.Common" Version="17.0.0" />
+    <PackageReference Include="Umbraco.Cms.Api.Common" Version="17.0.0" />
+    <PackageReference Include="Umbraco.Cms.Api.Management" Version="17.0.0" />
+    <PackageReference Include="Microsoft.Playwright" Version="*" />
+    <PackageReference Include="Deque.AxeCore.Playwright" Version="*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Dont include the client folder as part of packaging nuget build -->
+    <Content Remove="Client\**" />
+
+    <!-- However make the Umbraco-package.json included for dotnet pack or nuget package and visible to the solution -->
+    <None Include="Client\public\umbraco-package.json" Pack="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\docs\README_nuget.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="Client\public\images\uAccessible_logo.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+
+  <!-- Install Playwright Chromium after build (dev / CI only — not during pack) -->
+  <Target Name="InstallPlaywrightChromium" AfterTargets="Build" Condition="'$(DesignTimeBuild)' != 'true' AND '$(NuGetPackTask)' != 'true'">
+    <Exec Command="pwsh &quot;$(OutputPath)playwright.ps1&quot; install chromium"
+          ContinueOnError="true"
+          StandardOutputImportance="normal"
+          StandardErrorImportance="normal" />
+  </Target>
+
+</Project>

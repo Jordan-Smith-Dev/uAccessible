@@ -1,0 +1,14 @@
+{
+  "id": "Umbraco.Community.uAccessible",
+  "name": "Umbraco.Community.uAccessible",
+  "version": "0.0.0",
+  "allowTelemetry": true,
+  "extensions": [
+    {
+      "name": "uAccessible Bundle",
+      "alias": "Umbraco.Community.uAccessible.Bundle",
+      "type": "bundle",
+      "js": "/App_Plugins/UmbracoCommunityuAccessible/umbraco-community-uaccessible.js"
+    }
+  ]
+}

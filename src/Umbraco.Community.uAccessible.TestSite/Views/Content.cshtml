@@ -1,0 +1,271 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>@Model.Name – uAccessible Test Page</title>
+  <style>
+    body { font-family: sans-serif; max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+    section { border: 1px solid #ccc; border-radius: 6px; padding: 1.5rem; margin-bottom: 2rem; }
+    h2 { margin-top: 0; }
+    .label { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; margin-bottom: 0.5rem; }
+    .pass  { background: #d4edda; color: #155724; }
+    .fail  { background: #f8d7da; color: #721c24; }
+    .warn  { background: #fff3cd; color: #856404; }
+    .info  { background: #d1ecf1; color: #0c5460; }
+
+    /* ── Intentional contrast violation ── */
+    .low-contrast { color: #aaa; background: #fff; }
+
+    /* ── Intentional focus style removal (violation) ── */
+    .no-focus:focus { outline: none; }
+  </style>
+</head>
+<body>
+
+  <main>
+    <h1>@Model.Name – Accessibility Test Page</h1>
+    <p>This page is intentionally packed with a mix of passing, failing, incomplete, and manually-reviewable patterns so the uAccessible tab has plenty to report on.</p>
+
+    <!-- ═══════════════════════════════════════════
+         SECTION 1 — VIOLATIONS (axe-core will flag)
+    ═══════════════════════════════════════════ -->
+    <section>
+      <h2>Violations — these should appear in the Violations list</h2>
+
+      <!-- 1. Image missing alt attribute -->
+      <span class="label fail">FAIL</span>
+      <p>Image with no alt attribute:</p>
+      <img src="https://placehold.co/200x100" />
+
+      <!-- 2. Decorative image with meaningless alt -->
+      <span class="label fail">FAIL</span>
+      <p>Button with no accessible name:</p>
+      <button></button>
+
+      <!-- 3. Empty link -->
+      <span class="label fail">FAIL</span>
+      <p>Anchor with no text and no aria-label:</p>
+      <a href="https://example.com"></a>
+
+      <!-- 4. Low colour contrast -->
+      <span class="label fail">FAIL</span>
+      <p class="low-contrast">This text has insufficient colour contrast (#aaa on white — fails WCAG AA 4.5:1 ratio).</p>
+
+      <!-- 5. Input without a label -->
+      <span class="label fail">FAIL</span>
+      <p>Form input with no associated label:</p>
+      <input type="text" placeholder="Enter your name" />
+
+      <!-- 6. Heading hierarchy skip (h1 → h4, skipping h2/h3) -->
+      <span class="label fail">FAIL</span>
+      <p>Skipped heading level (h1 is the page heading; next heading jumps to h4):</p>
+      <h4>I skipped h2 and h3</h4>
+
+      <!-- 7. iFrame without a title -->
+      <span class="label fail">FAIL</span>
+      <p>iFrame with no title attribute:</p>
+      <iframe src="about:blank" width="200" height="100"></iframe>
+
+      <!-- 8. Table with no headers -->
+      <span class="label fail">FAIL</span>
+      <p>Data table with no &lt;th&gt; elements or scope attributes:</p>
+      <table border="1">
+        <tr><td>Name</td><td>Role</td><td>Department</td></tr>
+        <tr><td>Alice</td><td>Engineer</td><td>Platform</td></tr>
+        <tr><td>Bob</td><td>Designer</td><td>Product</td></tr>
+      </table>
+
+      <!-- 9. div used as interactive button with no role/tabindex -->
+      <span class="label fail">FAIL</span>
+      <p>A div styled as a button but missing role="button" and tabindex:</p>
+      <div style="display:inline-block;padding:6px 12px;background:#007bff;color:#fff;cursor:pointer;">
+        Click me (div, not a button)
+      </div>
+
+      <!-- 10. Focus indicator removed -->
+      <span class="label fail">FAIL</span>
+      <p>Button that hides its focus ring (keyboard users lose visibility):</p>
+      <button class="no-focus">I hide my focus outline</button>
+
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SECTION 2 — PASSES (axe-core marks green)
+    ═══════════════════════════════════════════ -->
+    <section>
+      <h2>Passes — these should appear in the Passes count</h2>
+
+      <!-- 1. Image with descriptive alt -->
+      <span class="label pass">PASS</span>
+      <p>Image with a descriptive alt attribute:</p>
+      <img src="https://placehold.co/200x100" alt="A 200 by 100 pixel grey placeholder image" />
+
+      <!-- 2. Decorative image correctly marked -->
+      <span class="label pass">PASS</span>
+      <p>Decorative image with empty alt (correctly hidden from screen readers):</p>
+      <img src="https://placehold.co/50x50" alt="" role="presentation" />
+
+      <!-- 3. Button with accessible name -->
+      <span class="label pass">PASS</span>
+      <p>Button with clear visible text:</p>
+      <button type="button">Submit form</button>
+
+      <!-- 4. Icon button with aria-label -->
+      <span class="label pass">PASS</span>
+      <p>Icon-only button with aria-label:</p>
+      <button type="button" aria-label="Close dialog">✕</button>
+
+      <!-- 5. Input with an associated label -->
+      <span class="label pass">PASS</span>
+      <p>Form input properly associated with a label:</p>
+      <label for="full-name">Full name</label>
+      <input type="text" id="full-name" name="full-name" />
+
+      <!-- 6. Link with descriptive text -->
+      <span class="label pass">PASS</span>
+      <p>Descriptive link text:</p>
+      <a href="https://www.w3.org/WAI/WCAG21/quickref/">Read the WCAG 2.1 quick reference guide</a>
+
+      <!-- 7. Correct heading hierarchy -->
+      <span class="label pass">PASS</span>
+      <p>Heading used in proper sequential order within this section:</p>
+      <h3>A properly nested h3</h3>
+
+      <!-- 8. Data table with headers -->
+      <span class="label pass">PASS</span>
+      <p>Data table with &lt;th scope&gt; on column headers:</p>
+      <table border="1">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Role</th>
+            <th scope="col">Department</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Alice</td><td>Engineer</td><td>Platform</td></tr>
+          <tr><td>Bob</td><td>Designer</td><td>Product</td></tr>
+        </tbody>
+      </table>
+
+      <!-- 9. Landmark regions -->
+      <span class="label pass">PASS</span>
+      <p>This entire page uses a &lt;main&gt; landmark — see the wrapping element.</p>
+
+      <!-- 10. Language attribute -->
+      <span class="label pass">PASS</span>
+      <p>The &lt;html&gt; element at the top of this page has <code>lang="en"</code>.</p>
+
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SECTION 3 — INCOMPLETE / NEEDS REVIEW
+         axe-core flags these but can't auto-determine pass/fail
+    ═══════════════════════════════════════════ -->
+    <section>
+      <h2>Incomplete — axe-core needs a human to verify</h2>
+
+      <!-- 1. ARIA role present but content unclear -->
+      <span class="label warn">INCOMPLETE</span>
+      <p>Live region — axe-core can verify the role but cannot determine whether the content announced dynamically is meaningful:</p>
+      <div role="status" aria-live="polite" id="live-region">Status updates will appear here.</div>
+
+      <!-- 2. Complex colour contrast (gradient background) -->
+      <span class="label warn">INCOMPLETE</span>
+      <p>Text over a gradient background — contrast ratio is ambiguous and cannot be auto-calculated:</p>
+      <div style="background: linear-gradient(90deg,#000,#fff); color:#888; padding:8px;">
+        Gradient background text
+      </div>
+
+      <!-- 3. aria-describedby referencing dynamic content -->
+      <span class="label warn">INCOMPLETE</span>
+      <p>Input with aria-describedby pointing to hint text — axe-core checks the association exists but cannot verify the hint is adequate:</p>
+      <label for="password">Password</label>
+      <input type="password" id="password" aria-describedby="password-hint" />
+      <span id="password-hint">Must be at least 8 characters and include a number.</span>
+
+      <!-- 4. Audio with text transcript nearby — needs human verification -->
+      <span class="label warn">INCOMPLETE</span>
+      <p>Audio element — axe-core flags it as needing a transcript but cannot verify that the paragraph below is actually the transcript:</p>
+      <audio controls>
+        <source src="about:blank" type="audio/mpeg" />
+        Your browser does not support the audio element.
+      </audio>
+      <p>Transcript: "This is a placeholder audio clip used for accessibility testing purposes."</p>
+
+      <!-- 5. Custom interactive widget -->
+      <span class="label warn">INCOMPLETE</span>
+      <p>Custom dropdown built with ARIA — axe-core validates the roles and properties exist but cannot fully test keyboard interaction:</p>
+      <ul role="listbox" aria-label="Select a colour" tabindex="0">
+        <li role="option" aria-selected="true">Red</li>
+        <li role="option" aria-selected="false">Green</li>
+        <li role="option" aria-selected="false">Blue</li>
+      </ul>
+
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SECTION 4 — MANUAL CHECKS ONLY
+         axe-core cannot test these at all
+    ═══════════════════════════════════════════ -->
+    <section>
+      <h2>Manual checks — axe-core cannot evaluate these</h2>
+
+      <!-- 1. PDF download -->
+      <span class="label info">MANUAL</span>
+      <p>
+        <a href="/downloads/sample.pdf" download>Download the sample report (PDF, 2.1 MB)</a><br />
+        <small>PDFs must be tagged and have a reading order set. Screen reader compatibility cannot be tested by automated tools.</small>
+      </p>
+
+      <!-- 2. Word document -->
+      <span class="label info">MANUAL</span>
+      <p>
+        <a href="/downloads/sample.docx" download>Download the terms and conditions (DOCX, 450 KB)</a><br />
+        <small>Office documents need headings, alt text on images, and reading order verified manually.</small>
+      </p>
+
+      <!-- 3. Embedded video (no captions verifiable by automation) -->
+      <span class="label info">MANUAL</span>
+      <p>Embedded video — captions and audio description must be verified by a human:</p>
+      <video controls width="320" height="180" aria-label="Placeholder test video">
+        <source src="about:blank" type="video/mp4" />
+        <track kind="captions" src="/captions/sample.vtt" srclang="en" label="English" default />
+        Your browser does not support the video element.
+      </video>
+
+      <!-- 4. Complex chart / infographic -->
+      <span class="label info">MANUAL</span>
+      <p>Complex infographic — automated tools confirm an alt attribute exists but cannot judge whether the description is adequate:</p>
+      <img
+        src="https://placehold.co/600x300"
+        alt="Bar chart showing monthly website traffic from January to June 2024. January: 12,000 visits. February: 15,400. March: 18,200. April: 14,800. May: 21,000. June: 23,500."
+      />
+
+      <!-- 5. Cognitive load / reading level -->
+      <span class="label info">MANUAL</span>
+      <p>Reading level — the following paragraph should be reviewed for plain-English compliance (WCAG 3.1.5):</p>
+      <p>
+        Notwithstanding the aforementioned stipulations, the indemnifying party shall, pursuant to the provisions
+        delineated herein, hold harmless the indemnified party from and against any and all liabilities, damages,
+        losses, costs, and expenses of any nature whatsoever.
+      </p>
+
+      <!-- 6. Timed content -->
+      <span class="label info">MANUAL</span>
+      <p>
+        <strong>Session timeout:</strong> This site times out after 15 minutes of inactivity.
+        Confirm that users are warned at least 20 seconds before expiry and can extend the session (WCAG 2.2.1).
+      </p>
+
+    </section>
+
+  </main>
+
+</body>
+</html>
