@@ -1,7 +1,3 @@
-# uAccessible
-
-Accessibility audit reports for your Umbraco content pages — directly inside the backoffice.
-
 uAccessible adds an **Accessibility** tab to every content node workspace. Clicking it launches a headless Chromium browser, runs a full [axe-core](https://github.com/dequelabs/axe-core) audit against the last published version of the page, and returns a graded report with violations, remediation guidance, WCAG success criteria, and affected HTML elements — without leaving the backoffice.
 
 ## Features
