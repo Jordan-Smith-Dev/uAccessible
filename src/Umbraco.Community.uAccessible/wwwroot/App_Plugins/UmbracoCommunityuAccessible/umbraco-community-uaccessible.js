@@ -10,7 +10,7 @@ const e = [
     name: "uAccessible Workspace View",
     alias: "Umbraco.Community.uAccessible.WorkspaceView",
     type: "workspaceView",
-    js: () => import("./workspace-view.element-ByQ1pvne.js"),
+    js: () => import("./workspace-view.element-C6gj0lCG.js"),
     weight: 90,
     meta: {
       label: "uAccessible",

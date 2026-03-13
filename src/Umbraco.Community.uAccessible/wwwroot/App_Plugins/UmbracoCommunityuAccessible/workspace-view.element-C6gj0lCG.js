@@ -1,14 +1,14 @@
-import { LitElement as I, html as s, nothing as c, css as E, state as p, customElement as P } from "@umbraco-cms/backoffice/external/lit";
+import { LitElement as A, html as s, nothing as l, css as I, state as p, customElement as P } from "@umbraco-cms/backoffice/external/lit";
 import { UmbElementMixin as T } from "@umbraco-cms/backoffice/element-api";
-import { UMB_DOCUMENT_WORKSPACE_CONTEXT as R } from "@umbraco-cms/backoffice/document";
-import { UMB_AUTH_CONTEXT as q } from "@umbraco-cms/backoffice/auth";
-import { UMB_NOTIFICATION_CONTEXT as B } from "@umbraco-cms/backoffice/notification";
-var j = Object.defineProperty, O = Object.getOwnPropertyDescriptor, d = (e, t, a, i) => {
-  for (var r = i > 1 ? void 0 : i ? O(t, a) : t, l = e.length - 1, o; l >= 0; l--)
-    (o = e[l]) && (r = (i ? o(t, a, r) : o(r)) || r);
-  return i && r && j(t, a, r), r;
+import { UMB_DOCUMENT_WORKSPACE_CONTEXT as B } from "@umbraco-cms/backoffice/document";
+import { UMB_AUTH_CONTEXT as R } from "@umbraco-cms/backoffice/auth";
+import { UMB_NOTIFICATION_CONTEXT as j } from "@umbraco-cms/backoffice/notification";
+var q = Object.defineProperty, O = Object.getOwnPropertyDescriptor, d = (e, t, a, i) => {
+  for (var r = i > 1 ? void 0 : i ? O(t, a) : t, n = e.length - 1, o; n >= 0; n--)
+    (o = e[n]) && (r = (i ? o(t, a, r) : o(r)) || r);
+  return i && r && q(t, a, r), r;
 };
-const V = "/umbraco/umbracommunityuaccessible/api/v1", G = ["critical", "serious", "moderate", "minor"], z = {
+const H = "/umbraco/umbracommunityuaccessible/api/v1", V = ["critical", "serious", "moderate", "minor"], z = {
   critical: "#c0392b",
   serious: "#d35400",
   moderate: "#b7770d",
@@ -19,7 +19,7 @@ const V = "/umbraco/umbracommunityuaccessible/api/v1", G = ["critical", "serious
   moderate: "rgba(183,119,13,0.12)",
   minor: "rgba(36,113,163,0.10)"
 };
-function H(e) {
+function G(e) {
   switch (e) {
     case "A":
       return { color: "#1a7a4a", ring: "#27ae60" };
@@ -56,7 +56,7 @@ function L(e) {
     t[i] && a.add(t[i]);
   return [...a];
 }
-function M(e) {
+function S(e) {
   switch (e) {
     case "minor":
       return "Low";
@@ -81,27 +81,27 @@ const _ = s`<svg class="btn-icon" xmlns="http://www.w3.org/2000/svg"
     stroke-width="1.75" viewBox="0 0 24 24">
     <path d="M21 2v6h-6"/>
     <path d="M21 13a9 9 0 1 1-3-7.7L21 8"/>
-</svg>`, F = s`<svg xmlns="http://www.w3.org/2000/svg" fill="none"
+</svg>`, D = s`<svg xmlns="http://www.w3.org/2000/svg" fill="none"
     stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
     stroke-width="2" viewBox="0 0 24 24">
     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
     <path d="M12 9v4" />
     <path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.871l-8.106 -13.534a1.914 1.914 0 0 0 -3.274 0z" />
     <path d="M12 16h.01" />
-</svg>`, D = s`<svg xmlns="http://www.w3.org/2000/svg" fill="none"
+</svg>`, F = s`<svg xmlns="http://www.w3.org/2000/svg" fill="none"
     stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
     stroke-width="2" viewBox="0 0 24 24">
     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
     <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
     <path d="M9 12l2 2l4 -4" />
-</svg>`, N = s`<svg xmlns="http://www.w3.org/2000/svg" fill="none"
+</svg>`, W = s`<svg xmlns="http://www.w3.org/2000/svg" fill="none"
     stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
     stroke-width="2" viewBox="0 0 24 24">
     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
     <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" />
     <path d="M12 9h.01" />
     <path d="M11 12h1v4h1" />
-</svg>`, W = s`<svg xmlns="http://www.w3.org/2000/svg" fill="none"
+</svg>`, N = s`<svg xmlns="http://www.w3.org/2000/svg" fill="none"
     stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
     stroke-width="1.75" viewBox="0 0 24 24">
     <line x1="8" y1="6" x2="21" y2="6"/>
@@ -115,10 +115,20 @@ const _ = s`<svg class="btn-icon" xmlns="http://www.w3.org/2000/svg"
     stroke-width="2" viewBox="0 0 24 24">
     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
     <path d="M13 3l0 7l6 0l-8 11l0 -7l-6 0l8 -11" />
-</svg>`, K = s`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="reason-icon">
+</svg>`, K = s`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+    class="reason-icon">
     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-    <path d="M17 3.34a10 10 0 1 1 -15 8.66l.005 -.324a10 10 0 0 1 14.995 -8.336m-5 11.66a1 1 0 0 0 -1 1v.01a1 1 0 0 0 2 0v-.01a1 1 0 0 0 -1 -1m0 -7a1 1 0 0 0 -1 1v4a1 1 0 0 0 2 0v-4a1 1 0 0 0 -1 -1" />
-</svg>`, Q = s`<svg xmlns="http://www.w3.org/2000/svg" fill="none"
+    <path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+    <path d="M12 8v4" />
+    <path d="M12 16h.01" />
+</svg>`, Q = s`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+    class="reason-icon reason-icon--pass">
+    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+    <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+    <path d="M9 12l2 2l4 -4" />
+</svg>`, Y = s`<svg xmlns="http://www.w3.org/2000/svg" fill="none"
     stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
     stroke-width="1.75" viewBox="0 0 24 24">
     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
@@ -126,16 +136,16 @@ const _ = s`<svg class="btn-icon" xmlns="http://www.w3.org/2000/svg"
     <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
     <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
 </svg>`;
-let n = class extends T(I) {
+let c = class extends T(A) {
   constructor() {
-    super(...arguments), this._loading = !1, this._result = null, this._error = null, this._collapsed = /* @__PURE__ */ new Set(), this._collapsedIncomplete = /* @__PURE__ */ new Set(), this._collapsedPasses = /* @__PURE__ */ new Set(), this._activeImpact = null, this._allCollapsed = !1, this._passesExpanded = !1, this._displayScore = 0, this._displayGrade = "?", this._displayColor = { color: "#6b7280", ring: "#9ca3af" }, this._displayViolations = 0, this._displayPasses = 0, this._displayIncomplete = 0, this._displayRules = 0, this._unique = null, this._tokenProvider = null, this._notificationContext = null;
+    super(...arguments), this._loading = !1, this._result = null, this._error = null, this._collapsed = /* @__PURE__ */ new Set(), this._collapsedIncomplete = /* @__PURE__ */ new Set(), this._collapsedPasses = /* @__PURE__ */ new Set(), this._activeImpact = null, this._allCollapsed = !1, this._violationsExpanded = !0, this._reviewExpanded = !0, this._passesExpanded = !1, this._displayScore = 0, this._displayGrade = "?", this._displayColor = { color: "#6b7280", ring: "#9ca3af" }, this._displayViolations = 0, this._displayPasses = 0, this._displayIncomplete = 0, this._displayRules = 0, this._unique = null, this._tokenProvider = null, this._notificationContext = null;
   }
   connectedCallback() {
-    super.connectedCallback(), this.consumeContext(q, (e) => {
+    super.connectedCallback(), this.consumeContext(R, (e) => {
       this._tokenProvider = (e == null ? void 0 : e.getOpenApiConfiguration().token) ?? null;
-    }), this.consumeContext(B, (e) => {
+    }), this.consumeContext(j, (e) => {
       this._notificationContext = e ?? null;
-    }), this.consumeContext(R, async (e) => {
+    }), this.consumeContext(B, async (e) => {
       var a;
       const t = (a = e == null ? void 0 : e.getUnique) == null ? void 0 : a.call(e);
       t && (this._unique = t);
@@ -147,9 +157,9 @@ let n = class extends T(I) {
   async _runAudit() {
     var e, t;
     if (this._unique) {
-      this._loading = !0, this._result = null, this._error = null, this._collapsed = /* @__PURE__ */ new Set(), this._collapsedIncomplete = /* @__PURE__ */ new Set(), this._collapsedPasses = /* @__PURE__ */ new Set(), this._activeImpact = null, this._allCollapsed = !1, this._passesExpanded = !1, this._displayScore = 0, this._displayGrade = "?", this._displayColor = { color: "#6b7280", ring: "#9ca3af" }, this._displayViolations = 0, this._displayPasses = 0, this._displayIncomplete = 0, this._displayRules = 0;
+      this._loading = !0, this._result = null, this._error = null, this._collapsed = /* @__PURE__ */ new Set(), this._collapsedIncomplete = /* @__PURE__ */ new Set(), this._collapsedPasses = /* @__PURE__ */ new Set(), this._activeImpact = null, this._allCollapsed = !1, this._violationsExpanded = !0, this._reviewExpanded = !0, this._passesExpanded = !1, this._displayScore = 0, this._displayGrade = "?", this._displayColor = { color: "#6b7280", ring: "#9ca3af" }, this._displayViolations = 0, this._displayPasses = 0, this._displayIncomplete = 0, this._displayRules = 0;
       try {
-        const a = this._tokenProvider ? await this._tokenProvider() : void 0, i = await fetch(`${V}/audit/key/${this._unique}`, {
+        const a = this._tokenProvider ? await this._tokenProvider() : void 0, i = await fetch(`${H}/audit/key/${this._unique}`, {
           headers: {
             Accept: "application/json",
             ...a ? { Authorization: `Bearer ${a}` } : {}
@@ -180,7 +190,7 @@ let n = class extends T(I) {
     return a.has(e) ? a.delete(e) : a.add(e), a;
   }
   _toggleAll() {
-    this._result && (this._allCollapsed ? (this._collapsed = /* @__PURE__ */ new Set(), this._collapsedIncomplete = /* @__PURE__ */ new Set(), this._allCollapsed = !1) : (this._collapsed = new Set(this._result.violations.map((e) => e.id)), this._collapsedIncomplete = new Set(this._result.incomplete.map((e) => e.id)), this._allCollapsed = !0));
+    this._result && (this._allCollapsed ? (this._collapsed = /* @__PURE__ */ new Set(), this._collapsedIncomplete = /* @__PURE__ */ new Set(), this._collapsedPasses = /* @__PURE__ */ new Set(), this._violationsExpanded = !0, this._reviewExpanded = !0, this._passesExpanded = !0, this._allCollapsed = !1) : (this._collapsed = new Set(this._result.violations.map((e) => e.id)), this._collapsedIncomplete = new Set(this._result.incomplete.map((e) => e.id)), this._collapsedPasses = new Set(this._result.passingChecks.map((e) => e.id)), this._violationsExpanded = !1, this._reviewExpanded = !1, this._passesExpanded = !1, this._allCollapsed = !0));
   }
   _filteredViolations() {
     if (!this._result) return [];
@@ -215,11 +225,11 @@ let n = class extends T(I) {
   }
   _animateScore(e, t) {
     var w, k, y;
-    const i = performance.now(), r = H(t), l = ["A", "B", "C", "D", "F"], o = Math.max(0, l.indexOf(t)), g = 25, u = ((o - g) % l.length + l.length) % l.length, v = ((w = this._result) == null ? void 0 : w.summary.totalViolations) ?? 0, h = ((k = this._result) == null ? void 0 : k.summary.passes) ?? 0, m = ((y = this._result) == null ? void 0 : y.summary.incompleteCount) ?? 0, b = this._uniqueRulesCount(), x = (S) => {
-      const A = S - i, $ = Math.min(A / 1800, 1), f = 1 - Math.pow(1 - $, 3);
-      this._displayScore = Math.round(f * e), this._displayGrade = l[(u + Math.floor(f * g)) % l.length], this._displayViolations = Math.round(f * v), this._displayPasses = Math.round(f * h), this._displayIncomplete = Math.round(f * m), this._displayRules = Math.round(f * b), $ < 1 ? requestAnimationFrame(x) : (this._displayScore = e, this._displayGrade = t, this._displayColor = r, this._displayViolations = v, this._displayPasses = h, this._displayIncomplete = m, this._displayRules = b);
+    const i = performance.now(), r = G(t), n = ["A", "B", "C", "D", "F"], o = Math.max(0, n.indexOf(t)), g = 25, u = ((o - g) % n.length + n.length) % n.length, v = ((w = this._result) == null ? void 0 : w.summary.totalViolations) ?? 0, h = ((k = this._result) == null ? void 0 : k.summary.passes) ?? 0, m = ((y = this._result) == null ? void 0 : y.summary.incompleteCount) ?? 0, x = this._uniqueRulesCount(), b = (M) => {
+      const E = M - i, $ = Math.min(E / 1800, 1), f = 1 - Math.pow(1 - $, 3);
+      this._displayScore = Math.round(f * e), this._displayGrade = n[(u + Math.floor(f * g)) % n.length], this._displayViolations = Math.round(f * v), this._displayPasses = Math.round(f * h), this._displayIncomplete = Math.round(f * m), this._displayRules = Math.round(f * x), $ < 1 ? requestAnimationFrame(b) : (this._displayScore = e, this._displayGrade = t, this._displayColor = r, this._displayViolations = v, this._displayPasses = h, this._displayIncomplete = m, this._displayRules = x);
     };
-    requestAnimationFrame(x);
+    requestAnimationFrame(b);
   }
   // -----------------------------------------------------------------------
   // Render
@@ -256,7 +266,7 @@ let n = class extends T(I) {
                             title="Open the published page in a new tab">
                             <span class="btn-content">View page ${_}</span>
                         </uui-button>
-                    ` : c}
+                    ` : l}
                     <uui-button
                         look="primary"
                         color="positive"
@@ -274,7 +284,7 @@ let n = class extends T(I) {
         `;
   }
   _renderBody() {
-    var l;
+    var n;
     if (this._error)
       return s`<uui-alert color="danger">${this._error}</uui-alert>`;
     if (!this._result)
@@ -300,7 +310,7 @@ let n = class extends T(I) {
                             <span class="fetch-url-label">URL attempted</span>
                             <code class="fetch-url-code">${this._result.url}</code>
                         </div>
-                    ` : c}
+                    ` : l}
                 </uui-alert>
             `;
     const { violations: e, incomplete: t } = this._result, a = this._filteredViolations(), i = this._quickWins(), r = this._audiences();
@@ -316,28 +326,28 @@ let n = class extends T(I) {
                 <!-- Stat cards -->
                 <div class="stats-row">
                     <div class="stat-card stat-card--violations">
-                        <div class="stat-card__icon">${F}</div>
+                        <div class="stat-card__icon">${D}</div>
                         <div class="stat-card__info">
                             <span class="stat-card__value">${this._displayViolations}</span>
                             <span class="stat-card__label">Violations</span>
                         </div>
                     </div>
                     <div class="stat-card stat-card--passes">
-                        <div class="stat-card__icon">${D}</div>
+                        <div class="stat-card__icon">${F}</div>
                         <div class="stat-card__info">
                             <span class="stat-card__value">${this._displayPasses}</span>
                             <span class="stat-card__label">Passing</span>
                         </div>
                     </div>
                     <div class="stat-card stat-card--review">
-                        <div class="stat-card__icon">${N}</div>
+                        <div class="stat-card__icon">${W}</div>
                         <div class="stat-card__info">
                             <span class="stat-card__value">${this._displayIncomplete}</span>
                             <span class="stat-card__label">Needs Review</span>
                         </div>
                     </div>
                     <div class="stat-card stat-card--rules">
-                        <div class="stat-card__icon">${W}</div>
+                        <div class="stat-card__icon">${N}</div>
                         <div class="stat-card__info">
                             <span class="stat-card__value">${this._displayRules}</span>
                             <span class="stat-card__label">Unique Rules</span>
@@ -349,7 +359,7 @@ let n = class extends T(I) {
             <!-- ── Filter + collapse all row ── -->
             <div class="filter-row">
                 <div class="summary-filters">
-                    ${G.map((o) => {
+                    ${V.map((o) => {
       const g = e.filter((h) => h.impact === o).length, u = this._activeImpact === o, v = this._activeImpact !== null && !u;
       return s`
                             <button
@@ -377,7 +387,7 @@ let n = class extends T(I) {
                             </svg>
                         </span>
                     </uui-button>
-                ` : c}
+                ` : l}
             </div>
 
             ${this._activeImpact ? s`
@@ -385,7 +395,7 @@ let n = class extends T(I) {
                     Showing <strong>${this._activeImpact}</strong> violations only &mdash;
                     click the pill again to clear.
                 </p>
-            ` : c}
+            ` : l}
 
             <!-- ── Who is affected + Quick wins ── -->
             ${(i.length > 0 || r.length > 0) && !this._activeImpact ? s`
@@ -393,7 +403,7 @@ let n = class extends T(I) {
                     ${r.length > 0 ? s`
                         <div class="exec-card">
                             <h4 class="exec-card__heading">
-                                ${Q} Who is affected
+                                ${Y} Who is affected
                             </h4>
                             <p class="exec-card__subtitle">Accessibility groups impacted by violations on this page</p>
                             <div class="audience-chips">
@@ -402,7 +412,7 @@ let n = class extends T(I) {
                                 `)}
                             </div>
                         </div>
-                    ` : c}
+                    ` : l}
 
                     ${i.length > 0 ? s`
                         <div class="exec-card">
@@ -413,8 +423,8 @@ let n = class extends T(I) {
                             <ul class="quick-wins-list">
                                 ${i.map((o) => s`
                                     <li class="quick-win">
-                                        <span class="effort-badge effort-badge--${M(o.impact).toLowerCase()}">
-                                            ${M(o.impact).toUpperCase()}
+                                        <span class="effort-badge effort-badge--${S(o.impact).toLowerCase()}">
+                                            ${S(o.impact).toUpperCase()}
                                         </span>
                                         <span class="quick-win__text">
                                             <span class="quick-win__title">${o.help}</span>
@@ -424,9 +434,9 @@ let n = class extends T(I) {
                                 `)}
                             </ul>
                         </div>
-                    ` : c}
+                    ` : l}
                 </div>
-            ` : c}
+            ` : l}
 
             <!-- ── Violations ── -->
             <h4 class="section-heading section-heading--violations">
@@ -443,19 +453,35 @@ let n = class extends T(I) {
                     (<strong>${e.length}</strong>
                     violation${e.length !== 1 ? "s" : ""} found)
                 </span>
+                <uui-button look="primary" compact @click=${() => {
+      this._violationsExpanded = !this._violationsExpanded;
+    }}>
+                    <span class="btn-content">
+                        ${this._violationsExpanded ? "Collapse" : "Show"}
+                        <svg class="btn-icon chevron-icon ${this._violationsExpanded ? "chevron-icon--up" : ""}"
+                            xmlns="http://www.w3.org/2000/svg" fill="none"
+                            stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                            stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <path d="M6 9l6 6l6 -6" />
+                        </svg>
+                    </span>
+                </uui-button>
             </h4>
 
-            ${e.length === 0 ? s`
-                <uui-alert color="positive" headline="No violations found">
-                    <p class="state-msg">This page passed all automated accessibility checks.</p>
-                </uui-alert>
-            ` : a.length === 0 ? s`
-                <uui-alert>No ${this._activeImpact} violations on this page.</uui-alert>
-            ` : s`
-                <div class="violations-list">
-                    ${a.map((o) => this._renderViolation(o, "violations"))}
-                </div>
-            `}
+            ${this._violationsExpanded ? s`
+                ${e.length === 0 ? s`
+                    <uui-alert color="positive" headline="No violations found">
+                        <p class="state-msg">This page passed all automated accessibility checks.</p>
+                    </uui-alert>
+                ` : a.length === 0 ? s`
+                    <uui-alert>No ${this._activeImpact} violations on this page.</uui-alert>
+                ` : s`
+                    <div class="violations-list">
+                        ${a.map((o) => this._renderViolation(o, "violations"))}
+                    </div>
+                `}
+            ` : l}
 
             <!-- ── Incomplete / needs review ── -->
             ${t.length > 0 ? s`
@@ -473,17 +499,33 @@ let n = class extends T(I) {
                         (<strong>${t.length}</strong>
                         item${t.length !== 1 ? "s" : ""} require manual verification)
                     </span>
+                    <uui-button look="primary" compact @click=${() => {
+      this._reviewExpanded = !this._reviewExpanded;
+    }}>
+                        <span class="btn-content">
+                            ${this._reviewExpanded ? "Collapse" : "Show"}
+                            <svg class="btn-icon chevron-icon ${this._reviewExpanded ? "chevron-icon--up" : ""}"
+                                xmlns="http://www.w3.org/2000/svg" fill="none"
+                                stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <path d="M6 9l6 6l6 -6" />
+                            </svg>
+                        </span>
+                    </uui-button>
                 </h4>
                 <uui-alert color="warning" headline="Automated tools cannot fully determine these">
                     <p class="state-msg">These checks require a human to verify. axe-core detected a potential issue but cannot confirm whether it is a true violation.</p>
                 </uui-alert>
-                <div class="violations-list" style="margin-top: var(--uui-size-space-3)">
-                    ${t.map((o) => this._renderViolation(o, "incomplete"))}
-                </div>
-            ` : c}
+                ${this._reviewExpanded ? s`
+                    <div class="violations-list" style="margin-top: var(--uui-size-space-3)">
+                        ${t.map((o) => this._renderViolation(o, "incomplete"))}
+                    </div>
+                ` : l}
+            ` : l}
 
             <!-- ── Passing checks ── -->
-            ${((l = this._result.passingChecks) == null ? void 0 : l.length) > 0 ? s`
+            ${((n = this._result.passingChecks) == null ? void 0 : n.length) > 0 ? s`
                 <h4 class="section-heading section-heading--passes" style="margin-top: var(--uui-size-layout-1)">
                     <svg class="section-heading__icon" xmlns="http://www.w3.org/2000/svg" fill="none"
                         stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
@@ -497,42 +539,46 @@ let n = class extends T(I) {
                         (<strong>${this._result.passingChecks.length}</strong>
                         rule${this._result.passingChecks.length !== 1 ? "s" : ""} passed)
                     </span>
-                    <button class="passes-collapse-btn" @click=${() => {
+                    <uui-button look="primary" compact @click=${() => {
       this._passesExpanded = !this._passesExpanded;
-    }}
-                        title="${this._passesExpanded ? "Collapse passing checks" : "Expand passing checks"}">
-                        ${this._passesExpanded ? "Collapse" : "Show"}
-                        <svg class="btn-icon chevron-icon ${this._passesExpanded ? "chevron-icon--up" : ""}"
-                            xmlns="http://www.w3.org/2000/svg" fill="none"
-                            stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                            stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                            <path d="M6 9l6 6l6 -6" />
-                        </svg>
-                    </button>
+    }}>
+                        <span class="btn-content">
+                            ${this._passesExpanded ? "Collapse" : "Show"}
+                            <svg class="btn-icon chevron-icon ${this._passesExpanded ? "chevron-icon--up" : ""}"
+                                xmlns="http://www.w3.org/2000/svg" fill="none"
+                                stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <path d="M6 9l6 6l6 -6" />
+                            </svg>
+                        </span>
+                    </uui-button>
                 </h4>
+                <uui-alert color="positive" headline="These checks passed">
+                    <p class="state-msg">Axe-core confirmed these rules are satisfied on this page. Each card below shows the element that was tested and the criteria it met. Passing these checks does not guarantee full WCAG conformance — manual testing is still recommended.</p>
+                </uui-alert>
                 ${this._passesExpanded ? s`
-                    <div class="violations-list">
+                    <div class="violations-list" style="margin-top: var(--uui-size-space-3)">
                         ${this._result.passingChecks.map((o) => this._renderPassingCheck(o))}
                     </div>
-                ` : c}
-            ` : c}
+                ` : l}
+            ` : l}
         `;
   }
   _renderViolation(e, t) {
-    const i = (t === "violations" ? this._collapsed : this._collapsedIncomplete).has(e.id), r = this._wcagTags(e.tags), l = e.impact ?? "minor", o = z[l] ?? "#6b7280", g = C[l] ?? "rgba(0,0,0,0.06)";
+    const i = (t === "violations" ? this._collapsed : this._collapsedIncomplete).has(e.id), r = this._wcagTags(e.tags), n = e.impact ?? "minor", o = z[n] ?? "#6b7280", g = C[n] ?? "rgba(0,0,0,0.06)";
     return s`
-            <uui-box class="block-box block-box--${l}${i ? " block-box--collapsed" : ""}">
+            <uui-box class="block-box block-box--${n}${i ? " block-box--collapsed" : ""}">
                 <div slot="headline" class="block-headline">
                     <span class="impact-badge" style="--badge-color: ${o}; --badge-bg: ${g}">
-                        ${l.charAt(0).toUpperCase() + l.slice(1)}
+                        ${n.charAt(0).toUpperCase() + n.slice(1)}
                     </span>
                     <span class="block-headline__text">${e.help}</span>
                     ${r.length > 0 ? s`
                         <div class="block-headline__tags">
                             ${r.map((u) => s`<span class="tag">${u}</span>`)}
                         </div>
-                    ` : c}
+                    ` : l}
                 </div>
 
                 <uui-button
@@ -554,7 +600,7 @@ let n = class extends T(I) {
                     </span>
                 </uui-button>
 
-                ${i ? c : s`
+                ${i ? l : s`
                     <div class="violation-body">
                         <div class="violation-desc-row">
                             <code class="rule-id">${e.id}</code>
@@ -577,14 +623,14 @@ let n = class extends T(I) {
                                 <div class="node">
                                     <div class="node__header">
                                         <span class="node__index" style="background: ${o}; color: #fff;">${v + 1}</span>
-                                        ${u.failureSummary ? s`<span class="node__reasons-label">WHY THIS FAILS</span>` : c}
+                                        ${u.failureSummary ? s`<span class="node__reasons-label">WHY THIS FAILS</span>` : l}
                                     </div>
                                     <div class="node__content">
                                         ${u.failureSummary ? s`
                                             <ul class="node__reasons-list">
-                                                ${u.failureSummary.split("; ").filter((h) => h.length > 0).map((h) => s`<li class="node__reasons-item">${K}<span>${h}</span></li>`)}
+                                                ${u.failureSummary.split("; ").filter((h) => h.length > 0).map((h) => s`<li class="node__reasons-item" style="color: ${o};">${K}<span>${h}</span></li>`)}
                                             </ul>
-                                        ` : c}
+                                        ` : l}
                                         <span class="node__html-label">IMPACTED CODE</span>
                                         <pre class="node__html"><code>${u.html}</code></pre>
                                         ${this._isSpecificSelector(u.target) ? s`
@@ -602,7 +648,7 @@ let n = class extends T(I) {
                                                     </uui-button>
                                                 </div>
                                             </div>
-                                        ` : c}
+                                        ` : l}
                                     </div>
                                 </div>
                             `)}
@@ -617,12 +663,13 @@ let n = class extends T(I) {
     return s`
             <uui-box class="block-box block-box--passes${t ? " block-box--collapsed" : ""}">
                 <div slot="headline" class="block-headline">
+                    <span class="pass-header-label">PASSED</span>
                     <span class="block-headline__text">${e.help}</span>
                     ${a.length > 0 ? s`
                         <div class="block-headline__tags">
                             ${a.map((i) => s`<span class="tag">${i}</span>`)}
                         </div>
-                    ` : c}
+                    ` : l}
                 </div>
 
                 <uui-button
@@ -644,7 +691,7 @@ let n = class extends T(I) {
                     </span>
                 </uui-button>
 
-                ${t ? c : s`
+                ${t ? l : s`
                     <div class="violation-body">
                         <div class="violation-desc-row">
                             <code class="rule-id">${e.id}</code>
@@ -667,8 +714,14 @@ let n = class extends T(I) {
                                     <div class="node">
                                         <div class="node__header">
                                             <span class="node__index" style="background: #27ae60; color: #fff;">${r + 1}</span>
+                                            <span class="node__reasons-label">WHY THIS PASSES</span>
                                         </div>
                                         <div class="node__content">
+                                            ${i.failureSummary ? s`
+                                                <ul class="node__reasons-list">
+                                                    ${i.failureSummary.split("; ").filter((n) => n.length > 0).map((n) => s`<li class="node__reasons-item node__reasons-item--pass">${Q}<span>${n}</span></li>`)}
+                                                </ul>
+                                            ` : l}
                                             <span class="node__html-label">PASSING CODE</span>
                                             <pre class="node__html"><code>${i.html}</code></pre>
                                             ${this._isSpecificSelector(i.target) ? s`
@@ -685,19 +738,19 @@ let n = class extends T(I) {
                                                         </uui-button>
                                                     </div>
                                                 </div>
-                                            ` : c}
+                                            ` : l}
                                         </div>
                                     </div>
                                 `)}
                             </div>
-                        ` : c}
+                        ` : l}
                     </div>
                 `}
             </uui-box>
         `;
   }
 };
-n.styles = E`
+c.styles = I`
         :host {
             display: block;
             padding: var(--uui-size-layout-1);
@@ -1378,7 +1431,6 @@ n.styles = E`
             align-items: flex-start;
             gap: 6px;
             font-size: 13px;
-            color: #922b21;
             line-height: 1.4;
         }
 
@@ -1387,6 +1439,14 @@ n.styles = E`
             width: 15px;
             height: 15px;
             margin-top: 1px;
+        }
+
+        .reason-icon--pass {
+            color: #27ae60;
+        }
+
+        .node__reasons-item--pass {
+            color: #1a6b3c;
         }
 
         .node__selector {
@@ -1444,6 +1504,13 @@ n.styles = E`
             border-bottom-color: rgba(39, 174, 96, 0.3);
         }
 
+        .section-heading--violations uui-button,
+        .section-heading--review uui-button,
+        .section-heading--passes uui-button {
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
         .passes-collapse-btn {
             display: inline-flex;
             align-items: center;
@@ -1469,6 +1536,20 @@ n.styles = E`
             background-color: rgba(39, 174, 96, 0.08);
         }
 
+        .pass-header-label {
+            display: inline-flex;
+            align-items: center;
+            font-size: 11px;
+            font-weight: 600;
+            color: #27ae60;
+            background: rgba(39, 174, 96, 0.12);
+            border: 1px solid rgba(39, 174, 96, 0.3);
+            border-radius: 4px;
+            padding: 2px 7px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
         .pass-node-count {
             font-size: 12px;
             color: var(--uui-color-text-alt, #6b7280);
@@ -1476,58 +1557,64 @@ n.styles = E`
     `;
 d([
   p()
-], n.prototype, "_loading", 2);
+], c.prototype, "_loading", 2);
 d([
   p()
-], n.prototype, "_result", 2);
+], c.prototype, "_result", 2);
 d([
   p()
-], n.prototype, "_error", 2);
+], c.prototype, "_error", 2);
 d([
   p()
-], n.prototype, "_collapsed", 2);
+], c.prototype, "_collapsed", 2);
 d([
   p()
-], n.prototype, "_collapsedIncomplete", 2);
+], c.prototype, "_collapsedIncomplete", 2);
 d([
   p()
-], n.prototype, "_collapsedPasses", 2);
+], c.prototype, "_collapsedPasses", 2);
 d([
   p()
-], n.prototype, "_activeImpact", 2);
+], c.prototype, "_activeImpact", 2);
 d([
   p()
-], n.prototype, "_allCollapsed", 2);
+], c.prototype, "_allCollapsed", 2);
 d([
   p()
-], n.prototype, "_passesExpanded", 2);
+], c.prototype, "_violationsExpanded", 2);
 d([
   p()
-], n.prototype, "_displayScore", 2);
+], c.prototype, "_reviewExpanded", 2);
 d([
   p()
-], n.prototype, "_displayGrade", 2);
+], c.prototype, "_passesExpanded", 2);
 d([
   p()
-], n.prototype, "_displayColor", 2);
+], c.prototype, "_displayScore", 2);
 d([
   p()
-], n.prototype, "_displayViolations", 2);
+], c.prototype, "_displayGrade", 2);
 d([
   p()
-], n.prototype, "_displayPasses", 2);
+], c.prototype, "_displayColor", 2);
 d([
   p()
-], n.prototype, "_displayIncomplete", 2);
+], c.prototype, "_displayViolations", 2);
 d([
   p()
-], n.prototype, "_displayRules", 2);
-n = d([
+], c.prototype, "_displayPasses", 2);
+d([
+  p()
+], c.prototype, "_displayIncomplete", 2);
+d([
+  p()
+], c.prototype, "_displayRules", 2);
+c = d([
   P("uaccessible-workspace-view")
-], n);
-const te = n;
+], c);
+const ae = c;
 export {
-  te as default,
-  n as uAccessibleWorkspaceViewElement
+  ae as default,
+  c as uAccessibleWorkspaceViewElement
 };
-//# sourceMappingURL=workspace-view.element-ByQ1pvne.js.map
+//# sourceMappingURL=workspace-view.element-C6gj0lCG.js.map

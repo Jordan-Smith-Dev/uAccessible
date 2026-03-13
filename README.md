@@ -13,10 +13,11 @@ uAccessible adds an **Accessibility** tab to every content node workspace. Click
 
 - **Accessibility workspace tab** — audit the page you're editing without leaving the content node
 - **A–F accessibility grade** — at-a-glance score based on violation count and severity
-- **Violations** — each failing rule shown with impact level (Critical / Serious / Moderate / Minor), WCAG success criteria tags, affected HTML elements with CSS selectors, and a direct link to the axe-core remediation guide
+- **Violations** — each failing rule shown with impact level (Critical / Serious / Moderate / Minor), WCAG success criteria tags, affected HTML elements with CSS selectors, failure reasons colour-coded by severity, and a direct link to the axe-core remediation guide
 - **Quick wins panel** — surfaces the lowest-effort, highest-impact fixes first
 - **Needs manual review** — items axe-core could not fully determine automatically, requiring human judgement
-- **Passing checks** — collapsible list of all rules that passed, so you can see what's already in good shape
+- **Passing checks** — collapsible section showing all rules that passed, with the specific criteria each element satisfied and CSS selectors for every checked element
+- **Collapse / expand controls** — collapse all cards at once or toggle individual sections (Violations, Needs manual review, Passing checks) independently
 - **WCAG 2.0 / 2.1 / 2.2 coverage** — Levels A and AA, powered by axe-core
 
 ## What it doesn't do

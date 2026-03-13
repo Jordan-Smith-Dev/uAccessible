@@ -184,9 +184,21 @@ const svgBolt = html`<svg xmlns="http://www.w3.org/2000/svg" fill="none"
     <path d="M13 3l0 7l6 0l-8 11l0 -7l-6 0l8 -11" />
 </svg>`;
 
-const svgExclamationCircle = html`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="reason-icon">
+const svgExclamationCircle = html`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+    class="reason-icon">
     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-    <path d="M17 3.34a10 10 0 1 1 -15 8.66l.005 -.324a10 10 0 0 1 14.995 -8.336m-5 11.66a1 1 0 0 0 -1 1v.01a1 1 0 0 0 2 0v-.01a1 1 0 0 0 -1 -1m0 -7a1 1 0 0 0 -1 1v4a1 1 0 0 0 2 0v-4a1 1 0 0 0 -1 -1" />
+    <path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+    <path d="M12 8v4" />
+    <path d="M12 16h.01" />
+</svg>`;
+
+const svgCheckCircle = html`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+    class="reason-icon reason-icon--pass">
+    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+    <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+    <path d="M9 12l2 2l4 -4" />
 </svg>`;
 
 const svgUsers = html`<svg xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -213,6 +225,8 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
     @state() private _collapsedPasses = new Set<string>();
     @state() private _activeImpact: string | null = null;
     @state() private _allCollapsed = false;
+    @state() private _violationsExpanded = true;
+    @state() private _reviewExpanded = true;
     @state() private _passesExpanded = false;
     @state() private _displayScore = 0;
     @state() private _displayGrade = '?';
@@ -259,6 +273,8 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
         this._collapsedPasses = new Set();
         this._activeImpact = null;
         this._allCollapsed = false;
+        this._violationsExpanded = true;
+        this._reviewExpanded = true;
         this._passesExpanded = false;
         this._displayScore = 0;
         this._displayGrade = '?';
@@ -315,10 +331,18 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
         if (this._allCollapsed) {
             this._collapsed = new Set();
             this._collapsedIncomplete = new Set();
+            this._collapsedPasses = new Set();
+            this._violationsExpanded = true;
+            this._reviewExpanded = true;
+            this._passesExpanded = true;
             this._allCollapsed = false;
         } else {
             this._collapsed = new Set(this._result.violations.map(v => v.id));
             this._collapsedIncomplete = new Set(this._result.incomplete.map(v => v.id));
+            this._collapsedPasses = new Set(this._result.passingChecks.map(v => v.id));
+            this._violationsExpanded = false;
+            this._reviewExpanded = false;
+            this._passesExpanded = false;
             this._allCollapsed = true;
         }
     }
@@ -645,19 +669,33 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
                     (<strong>${violations.length}</strong>
                     violation${violations.length !== 1 ? 's' : ''} found)
                 </span>
+                <uui-button look="primary" compact @click=${() => { this._violationsExpanded = !this._violationsExpanded; }}>
+                    <span class="btn-content">
+                        ${this._violationsExpanded ? 'Collapse' : 'Show'}
+                        <svg class="btn-icon chevron-icon ${this._violationsExpanded ? 'chevron-icon--up' : ''}"
+                            xmlns="http://www.w3.org/2000/svg" fill="none"
+                            stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                            stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <path d="M6 9l6 6l6 -6" />
+                        </svg>
+                    </span>
+                </uui-button>
             </h4>
 
-            ${violations.length === 0 ? html`
-                <uui-alert color="positive" headline="No violations found">
-                    <p class="state-msg">This page passed all automated accessibility checks.</p>
-                </uui-alert>
-            ` : filtered.length === 0 ? html`
-                <uui-alert>No ${this._activeImpact} violations on this page.</uui-alert>
-            ` : html`
-                <div class="violations-list">
-                    ${filtered.map(v => this._renderViolation(v, 'violations'))}
-                </div>
-            `}
+            ${this._violationsExpanded ? html`
+                ${violations.length === 0 ? html`
+                    <uui-alert color="positive" headline="No violations found">
+                        <p class="state-msg">This page passed all automated accessibility checks.</p>
+                    </uui-alert>
+                ` : filtered.length === 0 ? html`
+                    <uui-alert>No ${this._activeImpact} violations on this page.</uui-alert>
+                ` : html`
+                    <div class="violations-list">
+                        ${filtered.map(v => this._renderViolation(v, 'violations'))}
+                    </div>
+                `}
+            ` : nothing}
 
             <!-- ── Incomplete / needs review ── -->
             ${incomplete.length > 0 ? html`
@@ -675,13 +713,27 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
                         (<strong>${incomplete.length}</strong>
                         item${incomplete.length !== 1 ? 's' : ''} require manual verification)
                     </span>
+                    <uui-button look="primary" compact @click=${() => { this._reviewExpanded = !this._reviewExpanded; }}>
+                        <span class="btn-content">
+                            ${this._reviewExpanded ? 'Collapse' : 'Show'}
+                            <svg class="btn-icon chevron-icon ${this._reviewExpanded ? 'chevron-icon--up' : ''}"
+                                xmlns="http://www.w3.org/2000/svg" fill="none"
+                                stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <path d="M6 9l6 6l6 -6" />
+                            </svg>
+                        </span>
+                    </uui-button>
                 </h4>
                 <uui-alert color="warning" headline="Automated tools cannot fully determine these">
                     <p class="state-msg">These checks require a human to verify. axe-core detected a potential issue but cannot confirm whether it is a true violation.</p>
                 </uui-alert>
-                <div class="violations-list" style="margin-top: var(--uui-size-space-3)">
-                    ${incomplete.map(v => this._renderViolation(v, 'incomplete'))}
-                </div>
+                ${this._reviewExpanded ? html`
+                    <div class="violations-list" style="margin-top: var(--uui-size-space-3)">
+                        ${incomplete.map(v => this._renderViolation(v, 'incomplete'))}
+                    </div>
+                ` : nothing}
             ` : nothing}
 
             <!-- ── Passing checks ── -->
@@ -699,20 +751,24 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
                         (<strong>${this._result.passingChecks.length}</strong>
                         rule${this._result.passingChecks.length !== 1 ? 's' : ''} passed)
                     </span>
-                    <button class="passes-collapse-btn" @click=${() => { this._passesExpanded = !this._passesExpanded; }}
-                        title="${this._passesExpanded ? 'Collapse passing checks' : 'Expand passing checks'}">
-                        ${this._passesExpanded ? 'Collapse' : 'Show'}
-                        <svg class="btn-icon chevron-icon ${this._passesExpanded ? 'chevron-icon--up' : ''}"
-                            xmlns="http://www.w3.org/2000/svg" fill="none"
-                            stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                            stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                            <path d="M6 9l6 6l6 -6" />
-                        </svg>
-                    </button>
+                    <uui-button look="primary" compact @click=${() => { this._passesExpanded = !this._passesExpanded; }}>
+                        <span class="btn-content">
+                            ${this._passesExpanded ? 'Collapse' : 'Show'}
+                            <svg class="btn-icon chevron-icon ${this._passesExpanded ? 'chevron-icon--up' : ''}"
+                                xmlns="http://www.w3.org/2000/svg" fill="none"
+                                stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <path d="M6 9l6 6l6 -6" />
+                            </svg>
+                        </span>
+                    </uui-button>
                 </h4>
+                <uui-alert color="positive" headline="These checks passed">
+                    <p class="state-msg">Axe-core confirmed these rules are satisfied on this page. Each card below shows the element that was tested and the criteria it met. Passing these checks does not guarantee full WCAG conformance — manual testing is still recommended.</p>
+                </uui-alert>
                 ${this._passesExpanded ? html`
-                    <div class="violations-list">
+                    <div class="violations-list" style="margin-top: var(--uui-size-space-3)">
                         ${this._result.passingChecks.map(v => this._renderPassingCheck(v))}
                     </div>
                 ` : nothing}
@@ -793,7 +849,7 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
                                     <div class="node__content">
                                         ${node.failureSummary ? html`
                                             <ul class="node__reasons-list">
-                                                ${node.failureSummary.split('; ').filter(s => s.length > 0).map(p => html`<li class="node__reasons-item">${svgExclamationCircle}<span>${p}</span></li>`)}
+                                                ${node.failureSummary.split('; ').filter(s => s.length > 0).map(p => html`<li class="node__reasons-item" style="color: ${color};">${svgExclamationCircle}<span>${p}</span></li>`)}
                                             </ul>
                                         ` : nothing}
                                         <span class="node__html-label">IMPACTED CODE</span>
@@ -831,6 +887,7 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
         return html`
             <uui-box class="block-box block-box--passes${isCollapsed ? ' block-box--collapsed' : ''}">
                 <div slot="headline" class="block-headline">
+                    <span class="pass-header-label">PASSED</span>
                     <span class="block-headline__text">${v.help}</span>
                     ${wcagTags.length > 0 ? html`
                         <div class="block-headline__tags">
@@ -879,8 +936,14 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
                                     <div class="node">
                                         <div class="node__header">
                                             <span class="node__index" style="background: #27ae60; color: #fff;">${i + 1}</span>
+                                            <span class="node__reasons-label">WHY THIS PASSES</span>
                                         </div>
                                         <div class="node__content">
+                                            ${node.failureSummary ? html`
+                                                <ul class="node__reasons-list">
+                                                    ${node.failureSummary.split('; ').filter(s => s.length > 0).map(p => html`<li class="node__reasons-item node__reasons-item--pass">${svgCheckCircle}<span>${p}</span></li>`)}
+                                                </ul>
+                                            ` : nothing}
                                             <span class="node__html-label">PASSING CODE</span>
                                             <pre class="node__html"><code>${node.html}</code></pre>
                                             ${this._isSpecificSelector(node.target) ? html`
@@ -1594,7 +1657,6 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
             align-items: flex-start;
             gap: 6px;
             font-size: 13px;
-            color: #922b21;
             line-height: 1.4;
         }
 
@@ -1603,6 +1665,14 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
             width: 15px;
             height: 15px;
             margin-top: 1px;
+        }
+
+        .reason-icon--pass {
+            color: #27ae60;
+        }
+
+        .node__reasons-item--pass {
+            color: #1a6b3c;
         }
 
         .node__selector {
@@ -1660,6 +1730,13 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
             border-bottom-color: rgba(39, 174, 96, 0.3);
         }
 
+        .section-heading--violations uui-button,
+        .section-heading--review uui-button,
+        .section-heading--passes uui-button {
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
         .passes-collapse-btn {
             display: inline-flex;
             align-items: center;
@@ -1683,6 +1760,20 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
 
         .block-box--passes::part(header) {
             background-color: rgba(39, 174, 96, 0.08);
+        }
+
+        .pass-header-label {
+            display: inline-flex;
+            align-items: center;
+            font-size: 11px;
+            font-weight: 600;
+            color: #27ae60;
+            background: rgba(39, 174, 96, 0.12);
+            border: 1px solid rgba(39, 174, 96, 0.3);
+            border-radius: 4px;
+            padding: 2px 7px;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .pass-node-count {
