@@ -147,6 +147,25 @@ function effortFor(impact: string | null): string {
 }
 
 // ---------------------------------------------------------------------------
+// Thinking messages — shown while scan is running
+// ---------------------------------------------------------------------------
+
+const THINKING_STEPS: Array<{ icon: string; message: string }> = [
+    { icon: '🔍', message: 'Launching headless browser…' },
+    { icon: '📄', message: 'Loading the published page…' },
+    { icon: '🌈', message: 'Checking colour contrast ratios…' },
+    { icon: '🏷️', message: 'Inspecting ARIA roles and labels…' },
+    { icon: '⌨️', message: 'Evaluating keyboard navigation paths…' },
+    { icon: '🖼️', message: 'Scanning for missing alternative text…' },
+    { icon: '📐', message: 'Analysing heading structure and hierarchy…' },
+    { icon: '🔗', message: 'Checking link names and focus indicators…' },
+    { icon: '📋', message: 'Reviewing form labels and error handling…' },
+    { icon: '🌍', message: 'Verifying language attributes…' },
+    { icon: '📊', message: 'Auditing table structure and semantics…' },
+    { icon: '✨', message: 'Tallying violations and passes…' },
+];
+
+// ---------------------------------------------------------------------------
 // SVG icons
 // ---------------------------------------------------------------------------
 
@@ -245,6 +264,8 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
 
     @state() private _loading = false;
     @state() private _scanInProgress = false;
+    @state() private _thinkingIdx = 0;
+    private _thinkingTimer: ReturnType<typeof setInterval> | null = null;
     @state() private _result: AuditResult | null = null;
     @state() private _error: string | null = null;
     @state() private _collapsed = new Set<string>();
@@ -299,10 +320,25 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
     // API call
     // -----------------------------------------------------------------------
 
+    private _startThinking() {
+        this._thinkingIdx = 0;
+        this._thinkingTimer = setInterval(() => {
+            this._thinkingIdx = (this._thinkingIdx + 1) % THINKING_STEPS.length;
+        }, 2200);
+    }
+
+    private _stopThinking() {
+        if (this._thinkingTimer !== null) {
+            clearInterval(this._thinkingTimer);
+            this._thinkingTimer = null;
+        }
+    }
+
     private async _runAudit() {
         if (!this._unique) return;
 
         this._loading = true;
+        this._startThinking();
         this._result  = null;
         this._error   = null;
         this._historicalDate = null;
@@ -361,6 +397,7 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
         } catch (e: unknown) {
             this._error = e instanceof Error ? e.message : 'An unexpected error occurred.';
         } finally {
+            this._stopThinking();
             this._loading = false;
         }
     }
@@ -678,10 +715,15 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
 
     override render() {
         if (this._loading) {
+            const step = THINKING_STEPS[this._thinkingIdx];
             return html`
                 <div class="loader-alert-wrap">
                     <uui-alert>
                         <p>Running axe-core accessibility audit against the published version of this page — this may take a moment.</p>
+                        <div class="thinking-row">
+                            <span class="thinking-icon">${step.icon}</span>
+                            <span class="thinking-message">${step.message}</span>
+                        </div>
                         <div class="scan-progress-track" style="margin-top: 8px;"><div class="scan-progress-fill"></div></div>
                     </uui-alert>
                 </div>`;
@@ -1470,6 +1512,36 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
         }
         .loader-alert-wrap {
             padding: var(--uui-size-layout-1);
+        }
+
+        .thinking-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+            min-height: 24px;
+        }
+
+        .thinking-icon {
+            font-size: 16px;
+            line-height: 1;
+            animation: thinking-icon-pop 0.3s ease-out;
+        }
+
+        .thinking-message {
+            font-size: 13px;
+            color: var(--uui-color-text-alt, #6b7280);
+            animation: thinking-fade 0.4s ease-out;
+        }
+
+        @keyframes thinking-icon-pop {
+            from { transform: scale(0.6); opacity: 0; }
+            to   { transform: scale(1);   opacity: 1; }
+        }
+
+        @keyframes thinking-fade {
+            from { opacity: 0; transform: translateX(-4px); }
+            to   { opacity: 1; transform: translateX(0); }
         }
 
         .scan-progress-track {

@@ -1,15 +1,15 @@
-import { LitElement as f, nothing as d, html as s, css as w, state as h, customElement as k } from "@umbraco-cms/backoffice/external/lit";
-import { UmbElementMixin as m } from "@umbraco-cms/backoffice/element-api";
-import { UMB_AUTH_CONTEXT as y } from "@umbraco-cms/backoffice/auth";
-import { UMB_MODAL_MANAGER_CONTEXT as $ } from "@umbraco-cms/backoffice/modal";
-import { UMB_DOCUMENT_PICKER_MODAL as M } from "@umbraco-cms/backoffice/document";
-var S = Object.defineProperty, C = Object.getOwnPropertyDescriptor, u = (t, a, o, r) => {
-  for (var l = r > 1 ? void 0 : r ? C(a, o) : a, i = t.length - 1, e; i >= 0; i--)
-    (e = t[i]) && (l = (r ? e(a, o, l) : e(l)) || l);
-  return r && l && S(a, o, l), l;
+import { LitElement as m, nothing as d, html as s, css as k, state as h, customElement as w } from "@umbraco-cms/backoffice/external/lit";
+import { UmbElementMixin as y } from "@umbraco-cms/backoffice/element-api";
+import { UMB_AUTH_CONTEXT as $ } from "@umbraco-cms/backoffice/auth";
+import { UMB_MODAL_MANAGER_CONTEXT as M } from "@umbraco-cms/backoffice/modal";
+import { UMB_DOCUMENT_PICKER_MODAL as S } from "@umbraco-cms/backoffice/document";
+var C = Object.defineProperty, z = Object.getOwnPropertyDescriptor, u = (t, a, i, r) => {
+  for (var n = r > 1 ? void 0 : r ? z(a, i) : a, o = t.length - 1, e; o >= 0; o--)
+    (e = t[o]) && (n = (r ? e(a, i, n) : e(n)) || n);
+  return r && n && C(a, i, n), n;
 };
 const v = "/umbraco/umbracommunityuaccessible/api/v1";
-function x(t) {
+function f(t) {
   switch (t) {
     case "A":
       return "#27ae60";
@@ -28,31 +28,44 @@ function x(t) {
 function _(t) {
   return t >= 95 ? "A" : t >= 80 ? "B" : t >= 65 ? "C" : t >= 50 ? "D" : "F";
 }
-const z = s`<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
+const x = [
+  { icon: "🔍", message: "Launching headless browser…" },
+  { icon: "📄", message: "Loading the published page…" },
+  { icon: "🌈", message: "Checking colour contrast ratios…" },
+  { icon: "🏷️", message: "Inspecting ARIA roles and labels…" },
+  { icon: "⌨️", message: "Evaluating keyboard navigation paths…" },
+  { icon: "🖼️", message: "Scanning for missing alternative text…" },
+  { icon: "📐", message: "Analysing heading structure and hierarchy…" },
+  { icon: "🔗", message: "Checking link names and focus indicators…" },
+  { icon: "📋", message: "Reviewing form labels and error handling…" },
+  { icon: "🌍", message: "Verifying language attributes…" },
+  { icon: "📊", message: "Auditing table structure and semantics…" },
+  { icon: "✨", message: "Tallying violations and passes…" }
+], A = s`<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
     stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" viewBox="0 0 24 24">
     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
     <path d="M14 3v4a1 1 0 0 0 1 1h4" />
     <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
     <path d="M9 13h6" /><path d="M9 17h4" />
-</svg>`, H = s`<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
+</svg>`, E = s`<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
     stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
     <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
     <path d="M9 12l2 2l4 -4" />
-</svg>`, E = s`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+</svg>`, H = s`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
     <path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10" />
     <path d="M12 5v2" /><path d="M12 10v1" /><path d="M12 14v1" /><path d="M12 18v1" />
     <path d="M7 3v2" /><path d="M17 3v2" />
     <path d="M15 10.5v3a1.5 1.5 0 0 0 3 0v-3a1.5 1.5 0 0 0 -3 0" />
     <path d="M6 9h1.5a1.5 1.5 0 0 1 0 3h-.5h.5a1.5 1.5 0 0 1 0 3h-1.5" />
-</svg>`, A = s`<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
+</svg>`, P = s`<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
     stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
     <path d="M12 9v4" />
     <path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.871l-8.106 -13.534a1.914 1.914 0 0 0 -3.274 0z" />
     <path d="M12 16h.01" />
-</svg>`, P = s`<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
+</svg>`, I = s`<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
     stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
     <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" />
@@ -64,14 +77,14 @@ const z = s`<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentC
     <path d="M12 8l0 4l2 2" />
     <path d="M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5" />
 </svg>`;
-let c = class extends m(f) {
+let c = class extends y(m) {
   constructor() {
-    super(...arguments), this._selectedKey = null, this._selectedName = null, this._scanning = !1, this._scanInProgress = !1, this._result = null, this._error = null, this._sortBy = "tree", this._sortAsc = !0, this._resultsExpanded = !0, this._siteHistory = [], this._historyExpanded = !1, this._historyLoading = null, this._historicalIndex = null, this._historicalDate = null, this._tokenProvider = null;
+    super(...arguments), this._selectedKey = null, this._selectedName = null, this._scanning = !1, this._scanInProgress = !1, this._thinkingIdx = 0, this._thinkingTimer = null, this._result = null, this._error = null, this._sortBy = "tree", this._sortAsc = !0, this._resultsExpanded = !0, this._siteHistory = [], this._historyExpanded = !1, this._historyLoading = null, this._historicalIndex = null, this._historicalDate = null, this._tokenProvider = null;
   }
   connectedCallback() {
-    super.connectedCallback(), this.consumeContext(y, (t) => {
+    super.connectedCallback(), this.consumeContext($, (t) => {
       this._tokenProvider = (t == null ? void 0 : t.getOpenApiConfiguration().token) ?? null;
-    }), this.consumeContext($, (t) => {
+    }), this.consumeContext(M, (t) => {
       this._modalManager = t;
     });
   }
@@ -80,32 +93,40 @@ let c = class extends m(f) {
     return t ? { Authorization: `Bearer ${t}` } : {};
   }
   async _pickContent() {
-    var r, l, i;
+    var r, n, o;
     if (!this._modalManager) return;
-    const a = await this._modalManager.open(this, M, {
+    const a = await this._modalManager.open(this, S, {
       data: { multiple: !1, pickableFilter: () => !0 }
     }).onSubmit().catch(() => {
     });
     if (!((r = a == null ? void 0 : a.selection) != null && r.length)) return;
-    const o = a.selection[0];
-    if (o) {
-      this._selectedKey = o, this._selectedName = o, this._result = null, this._error = null, this._siteHistory = [], this._historicalDate = null, this._historicalIndex = null;
+    const i = a.selection[0];
+    if (i) {
+      this._selectedKey = i, this._selectedName = i, this._result = null, this._error = null, this._siteHistory = [], this._historicalDate = null, this._historicalIndex = null;
       try {
-        const e = await this._token(), g = await fetch(`/umbraco/management/api/v1/document/${o}`, {
+        const e = await this._token(), g = await fetch(`/umbraco/management/api/v1/document/${i}`, {
           headers: { Accept: "application/json", ...e }
         });
         if (g.ok) {
           const p = await g.json();
-          this._selectedName = ((i = (l = p == null ? void 0 : p.variants) == null ? void 0 : l[0]) == null ? void 0 : i.name) ?? (p == null ? void 0 : p.name) ?? o;
+          this._selectedName = ((o = (n = p == null ? void 0 : p.variants) == null ? void 0 : n[0]) == null ? void 0 : o.name) ?? (p == null ? void 0 : p.name) ?? i;
         }
       } catch {
       }
       await this._fetchSiteHistory();
     }
   }
+  _startThinking() {
+    this._thinkingIdx = 0, this._thinkingTimer = setInterval(() => {
+      this._thinkingIdx = (this._thinkingIdx + 1) % x.length;
+    }, 2200);
+  }
+  _stopThinking() {
+    this._thinkingTimer !== null && (clearInterval(this._thinkingTimer), this._thinkingTimer = null);
+  }
   async _runScan() {
     if (this._selectedKey) {
-      this._scanning = !0, this._scanInProgress = !1, this._result = null, this._error = null, this._historicalDate = null, this._historicalIndex = null;
+      this._scanning = !0, this._startThinking(), this._scanInProgress = !1, this._result = null, this._error = null, this._historicalDate = null, this._historicalIndex = null;
       try {
         const t = await this._token(), a = await fetch(`${v}/audit/tree/${this._selectedKey}`, {
           headers: { Accept: "application/json", ...t }
@@ -119,7 +140,7 @@ let c = class extends m(f) {
       } catch (t) {
         this._error = t instanceof Error ? t.message : "An unexpected error occurred.";
       } finally {
-        this._scanning = !1;
+        this._stopThinking(), this._scanning = !1;
       }
     }
   }
@@ -137,8 +158,8 @@ let c = class extends m(f) {
     if (this._selectedKey) {
       this._historyLoading = t;
       try {
-        const o = await this._token(), r = await fetch(`${v}/audit/site-history/${this._selectedKey}/${t}`, {
-          headers: { Accept: "application/json", ...o }
+        const i = await this._token(), r = await fetch(`${v}/audit/site-history/${this._selectedKey}/${t}`, {
+          headers: { Accept: "application/json", ...i }
         });
         if (r.status === 404) {
           this._error = "This history entry has no stored report. It was recorded before full result storage was added. Run a new scan to capture a complete report.";
@@ -146,8 +167,8 @@ let c = class extends m(f) {
         }
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         this._result = await r.json(), this._historicalDate = a, this._historicalIndex = t, this._historyExpanded = !1;
-      } catch (o) {
-        this._error = o instanceof Error ? o.message : "Could not load historical scan.";
+      } catch (i) {
+        this._error = i instanceof Error ? i.message : "Could not load historical scan.";
       } finally {
         this._historyLoading = null;
       }
@@ -177,8 +198,8 @@ let c = class extends m(f) {
   }
   _sortedPages() {
     return this._result ? this._sortBy === "tree" ? this._result.pages : [...this._result.pages].sort((t, a) => {
-      let o = 0;
-      return this._sortBy === "name" && (o = (t.name ?? "").localeCompare(a.name ?? "")), this._sortBy === "score" && (o = t.score - a.score), this._sortBy === "violations" && (o = t.violationCount - a.violationCount), this._sortAsc ? o : -o;
+      let i = 0;
+      return this._sortBy === "name" && (i = (t.name ?? "").localeCompare(a.name ?? "")), this._sortBy === "score" && (i = t.score - a.score), this._sortBy === "violations" && (i = t.violationCount - a.violationCount), this._sortAsc ? i : -i;
     }) : [];
   }
   _setSort(t) {
@@ -208,48 +229,48 @@ let c = class extends m(f) {
         e.skipped ? `"Skipped: ${(e.skipReason ?? "").replace(/"/g, '""')}"` : "Scanned"
       ]);
     const a = t.map((e) => e.join(",")).join(`
-`), o = new Blob([a], { type: "text/csv;charset=utf-8;" }), r = URL.createObjectURL(o), l = document.createElement("a");
-    l.href = r;
-    const i = (/* @__PURE__ */ new Date()).toISOString().slice(0, 16).replace("T", "_").replace(":", "-");
-    l.download = `uAccessible-site-audit-${i}.csv`, l.click(), URL.revokeObjectURL(r);
+`), i = new Blob([a], { type: "text/csv;charset=utf-8;" }), r = URL.createObjectURL(i), n = document.createElement("a");
+    n.href = r;
+    const o = (/* @__PURE__ */ new Date()).toISOString().slice(0, 16).replace("T", "_").replace(":", "-");
+    n.download = `uAccessible-site-audit-${o}.csv`, n.click(), URL.revokeObjectURL(r);
   }
   async _exportHistoryCsv(t) {
     if (this._selectedKey)
       try {
-        const a = await this._token(), o = await fetch(`${v}/audit/site-history/${this._selectedKey}/${t}`, {
+        const a = await this._token(), i = await fetch(`${v}/audit/site-history/${this._selectedKey}/${t}`, {
           headers: { Accept: "application/json", ...a }
         });
-        if (!o.ok) return;
-        const r = await o.json(), l = (/* @__PURE__ */ new Date()).toISOString().slice(0, 16).replace("T", "_").replace(":", "-"), i = [["Page", "URL", "Grade", "Score", "Violations", "Critical", "Serious", "Passes", "Status"]];
-        for (const n of r.pages)
-          i.push([
-            `"${(n.name ?? "").replace(/"/g, '""')}"`,
-            `"${(n.url ?? "").replace(/"/g, '""')}"`,
-            n.skipped ? "" : n.grade,
-            n.skipped ? "" : String(n.score),
-            n.skipped ? "" : String(n.violationCount),
-            n.skipped ? "" : String(n.criticalCount),
-            n.skipped ? "" : String(n.seriousCount),
-            n.skipped ? "" : String(n.passingCount),
-            n.skipped ? `"Skipped: ${(n.skipReason ?? "").replace(/"/g, '""')}"` : "Scanned"
+        if (!i.ok) return;
+        const r = await i.json(), n = (/* @__PURE__ */ new Date()).toISOString().slice(0, 16).replace("T", "_").replace(":", "-"), o = [["Page", "URL", "Grade", "Score", "Violations", "Critical", "Serious", "Passes", "Status"]];
+        for (const l of r.pages)
+          o.push([
+            `"${(l.name ?? "").replace(/"/g, '""')}"`,
+            `"${(l.url ?? "").replace(/"/g, '""')}"`,
+            l.skipped ? "" : l.grade,
+            l.skipped ? "" : String(l.score),
+            l.skipped ? "" : String(l.violationCount),
+            l.skipped ? "" : String(l.criticalCount),
+            l.skipped ? "" : String(l.seriousCount),
+            l.skipped ? "" : String(l.passingCount),
+            l.skipped ? `"Skipped: ${(l.skipReason ?? "").replace(/"/g, '""')}"` : "Scanned"
           ]);
-        const e = i.map((n) => n.join(",")).join(`
+        const e = o.map((l) => l.join(",")).join(`
 `), g = new Blob([e], { type: "text/csv;charset=utf-8;" }), p = URL.createObjectURL(g), b = document.createElement("a");
-        b.href = p, b.download = `uAccessible-site-audit-${l}.csv`, b.click(), URL.revokeObjectURL(p);
+        b.href = p, b.download = `uAccessible-site-audit-${n}.csv`, b.click(), URL.revokeObjectURL(p);
       } catch {
       }
   }
   updated(t) {
     var a;
     if (t.has("_result") && this._result && !this._historicalDate) {
-      const o = (a = this.shadowRoot) == null ? void 0 : a.querySelectorAll(".count-up");
-      if (!o) return;
-      o.forEach((r) => {
-        const l = parseInt(r.dataset.target ?? "0", 10);
-        if (isNaN(l) || l === 0) return;
-        const i = 600, e = performance.now(), g = (p) => {
-          const b = Math.min((p - e) / i, 1), n = 1 - Math.pow(1 - b, 3);
-          r.textContent = String(Math.round(l * n)), b < 1 ? requestAnimationFrame(g) : r.textContent = String(l);
+      const i = (a = this.shadowRoot) == null ? void 0 : a.querySelectorAll(".count-up");
+      if (!i) return;
+      i.forEach((r) => {
+        const n = parseInt(r.dataset.target ?? "0", 10);
+        if (isNaN(n) || n === 0) return;
+        const o = 600, e = performance.now(), g = (p) => {
+          const b = Math.min((p - e) / o, 1), l = 1 - Math.pow(1 - b, 3);
+          r.textContent = String(Math.round(n * l)), b < 1 ? requestAnimationFrame(g) : r.textContent = String(n);
         };
         requestAnimationFrame(g);
       });
@@ -302,6 +323,10 @@ let c = class extends m(f) {
                 ${this._scanning ? s`
                     <uui-alert>
                         <p>Scanning all pages in sequence — this may take a while for large trees. Each page runs a full axe-core audit in a headless browser.</p>
+                        <div class="thinking-row">
+                            <span class="thinking-icon">${x[this._thinkingIdx].icon}</span>
+                            <span class="thinking-message">${x[this._thinkingIdx].message}</span>
+                        </div>
                         <div class="scan-progress-track" style="margin-top: 8px;"><div class="scan-progress-fill"></div></div>
                     </uui-alert>
                 ` : d}
@@ -411,7 +436,7 @@ let c = class extends m(f) {
                                     <tr class="${t.index === 0 ? "history-row--latest" : ""} ${this._historicalIndex === t.index ? "history-row--active" : ""}">
                                         <td>${new Date(t.scannedAt).toLocaleString()}</td>
                                         <td>${t.scannedPages}/${t.totalPages}</td>
-                                        <td><span class="grade-circle" style="color: ${x(_(t.averageScore))};">${_(t.averageScore)}</span></td>
+                                        <td><span class="grade-circle" style="color: ${f(_(t.averageScore))};">${_(t.averageScore)}</span></td>
                                         <td><span class="score-val">${Math.round(t.averageScore)}/100</span></td>
                                         <td><span class="count-badge count-badge--violations">${t.totalViolations}</span></td>
                                         <td><span class="count-badge count-badge--critical">${t.totalCritical ?? 0}</span></td>
@@ -464,18 +489,18 @@ let c = class extends m(f) {
         `;
   }
   _renderResults() {
-    const t = this._result, a = this._sortedPages(), o = Math.round(t.averageScore), r = _(o), l = { A: "#1a7a4a", B: "#1a6b2a", C: "#b7770d", D: "#d35400", F: "#c0392b" }[r] ?? "#6b7280", i = this._delta();
+    const t = this._result, a = this._sortedPages(), i = Math.round(t.averageScore), r = _(i), n = { A: "#1a7a4a", B: "#1a6b2a", C: "#b7770d", D: "#d35400", F: "#c0392b" }[r] ?? "#6b7280", o = this._delta();
     return s`
             <!-- ── Stat cards ── -->
             <div class="stats-row">
                 <div class="stat-card stat-card--violations">
-                    <div class="stat-card__icon">${A}</div>
+                    <div class="stat-card__icon">${P}</div>
                     <div class="stat-card__info">
                         <div class="stat-card__value-row">
                             <span class="stat-card__value count-up" data-target="${t.totalViolations}">${t.totalViolations}</span>
-                            ${i && i.violations !== 0 ? s`
-                                <span class="delta-badge ${i.violations > 0 ? "delta-badge--down" : "delta-badge--up"}">
-                                    ${i.violations > 0 ? "▲" : "▼"}${Math.abs(i.violations)}
+                            ${o && o.violations !== 0 ? s`
+                                <span class="delta-badge ${o.violations > 0 ? "delta-badge--down" : "delta-badge--up"}">
+                                    ${o.violations > 0 ? "▲" : "▼"}${Math.abs(o.violations)}
                                 </span>
                             ` : d}
                         </div>
@@ -483,27 +508,27 @@ let c = class extends m(f) {
                     </div>
                 </div>
                 <div class="stat-card stat-card--pages">
-                    <div class="stat-card__icon">${z}</div>
+                    <div class="stat-card__icon">${A}</div>
                     <div class="stat-card__info">
                         <span class="stat-card__value count-up" data-target="${t.totalPages}">${t.totalPages}</span>
                         <span class="stat-card__label">Pages found</span>
                     </div>
                 </div>
                 <div class="stat-card stat-card--scanned">
-                    <div class="stat-card__icon">${H}</div>
+                    <div class="stat-card__icon">${E}</div>
                     <div class="stat-card__info">
                         <span class="stat-card__value count-up" data-target="${t.scannedPages}">${t.scannedPages}</span>
                         <span class="stat-card__label">Pages scanned</span>
                     </div>
                 </div>
-                <div class="stat-card stat-card--score" style="--score-color: ${l}">
-                    <div class="stat-card__icon">${E}</div>
+                <div class="stat-card stat-card--score" style="--score-color: ${n}">
+                    <div class="stat-card__icon">${H}</div>
                     <div class="stat-card__info">
                         <div class="stat-card__value-row">
-                            <span class="stat-card__value stat-card__value--score count-up" data-target="${o}">${o}</span>
-                            ${i && i.score !== 0 ? s`
-                                <span class="delta-badge ${i.score > 0 ? "delta-badge--up" : "delta-badge--down"}">
-                                    ${i.score > 0 ? "▲" : "▼"}${Math.abs(i.score)}
+                            <span class="stat-card__value stat-card__value--score count-up" data-target="${i}">${i}</span>
+                            ${o && o.score !== 0 ? s`
+                                <span class="delta-badge ${o.score > 0 ? "delta-badge--up" : "delta-badge--down"}">
+                                    ${o.score > 0 ? "▲" : "▼"}${Math.abs(o.score)}
                                 </span>
                             ` : d}
                         </div>
@@ -512,7 +537,7 @@ let c = class extends m(f) {
                 </div>
                 ${t.skippedPages > 0 ? s`
                     <div class="stat-card stat-card--skipped">
-                        <div class="stat-card__icon">${P}</div>
+                        <div class="stat-card__icon">${I}</div>
                         <div class="stat-card__info">
                             <span class="stat-card__value">${t.skippedPages}</span>
                             <span class="stat-card__label">Skipped</span>
@@ -633,7 +658,7 @@ let c = class extends m(f) {
                                     </div>
                                 </uui-table-cell>
                                 <uui-table-cell class="col-grade">
-                                    <span class="grade-circle" style="color: ${x(e.grade)};">${e.grade}</span>
+                                    <span class="grade-circle" style="color: ${f(e.grade)};">${e.grade}</span>
                                 </uui-table-cell>
                                 <uui-table-cell class="col-score">
                                     <span class="score-val">${e.score}/100</span>
@@ -681,7 +706,7 @@ let c = class extends m(f) {
   }
 };
 c.styles = [
-  w`
+  k`
             :host { display: block; padding: var(--uui-size-layout-1); }
 
             .layout { display: flex; flex-direction: column; gap: var(--uui-size-layout-1); }
@@ -809,6 +834,36 @@ c.styles = [
             .history-load-btn[disabled] {
                 pointer-events: none;
                 opacity: 0.45;
+            }
+
+            .thinking-row {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-top: 10px;
+                min-height: 24px;
+            }
+
+            .thinking-icon {
+                font-size: 16px;
+                line-height: 1;
+                animation: thinking-icon-pop 0.3s ease-out;
+            }
+
+            .thinking-message {
+                font-size: 13px;
+                color: var(--uui-color-text-alt, #6b7280);
+                animation: thinking-fade 0.4s ease-out;
+            }
+
+            @keyframes thinking-icon-pop {
+                from { transform: scale(0.6); opacity: 0; }
+                to   { transform: scale(1);   opacity: 1; }
+            }
+
+            @keyframes thinking-fade {
+                from { opacity: 0; transform: translateX(-4px); }
+                to   { opacity: 1; transform: translateX(0); }
             }
 
             .scan-progress-track {
@@ -949,6 +1004,9 @@ u([
 ], c.prototype, "_scanInProgress", 2);
 u([
   h()
+], c.prototype, "_thinkingIdx", 2);
+u([
+  h()
 ], c.prototype, "_result", 2);
 u([
   h()
@@ -978,11 +1036,11 @@ u([
   h()
 ], c.prototype, "_historicalDate", 2);
 c = u([
-  k("uaccessible-dashboard")
+  w("uaccessible-dashboard")
 ], c);
 const R = c;
 export {
   R as default,
   c as uAccessibleDashboardElement
 };
-//# sourceMappingURL=dashboard.element-0vBR6oWt.js.map
+//# sourceMappingURL=dashboard.element-BSTCapUC.js.map

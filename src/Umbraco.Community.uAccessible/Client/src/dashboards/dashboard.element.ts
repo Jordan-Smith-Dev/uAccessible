@@ -77,6 +77,23 @@ function gradeFromScore(score: number): string {
     return 'F';
 }
 
+// ── Thinking messages — shown while scan is running ────────────────────────
+
+const THINKING_STEPS: Array<{ icon: string; message: string }> = [
+    { icon: '🔍', message: 'Launching headless browser…' },
+    { icon: '📄', message: 'Loading the published page…' },
+    { icon: '🌈', message: 'Checking colour contrast ratios…' },
+    { icon: '🏷️', message: 'Inspecting ARIA roles and labels…' },
+    { icon: '⌨️', message: 'Evaluating keyboard navigation paths…' },
+    { icon: '🖼️', message: 'Scanning for missing alternative text…' },
+    { icon: '📐', message: 'Analysing heading structure and hierarchy…' },
+    { icon: '🔗', message: 'Checking link names and focus indicators…' },
+    { icon: '📋', message: 'Reviewing form labels and error handling…' },
+    { icon: '🌍', message: 'Verifying language attributes…' },
+    { icon: '📊', message: 'Auditing table structure and semantics…' },
+    { icon: '✨', message: 'Tallying violations and passes…' },
+];
+
 // ── SVG icons ──────────────────────────────────────────────────────────────
 
 const svgPages = html`<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
@@ -133,6 +150,8 @@ export class uAccessibleDashboardElement extends UmbElementMixin(LitElement) {
     @state() private _selectedName: string | null = null;
     @state() private _scanning = false;
     @state() private _scanInProgress = false;
+    @state() private _thinkingIdx = 0;
+    private _thinkingTimer: ReturnType<typeof setInterval> | null = null;
     @state() private _result: SiteAuditResult | null = null;
     @state() private _error: string | null = null;
     @state() private _sortBy: 'tree' | 'name' | 'score' | 'violations' = 'tree';
@@ -193,9 +212,24 @@ export class uAccessibleDashboardElement extends UmbElementMixin(LitElement) {
         await this._fetchSiteHistory();
     }
 
+    private _startThinking() {
+        this._thinkingIdx = 0;
+        this._thinkingTimer = setInterval(() => {
+            this._thinkingIdx = (this._thinkingIdx + 1) % THINKING_STEPS.length;
+        }, 2200);
+    }
+
+    private _stopThinking() {
+        if (this._thinkingTimer !== null) {
+            clearInterval(this._thinkingTimer);
+            this._thinkingTimer = null;
+        }
+    }
+
     private async _runScan() {
         if (!this._selectedKey) return;
         this._scanning = true;
+        this._startThinking();
         this._scanInProgress = false;
         this._result = null;
         this._error = null;
@@ -214,6 +248,7 @@ export class uAccessibleDashboardElement extends UmbElementMixin(LitElement) {
         } catch (e: unknown) {
             this._error = e instanceof Error ? e.message : 'An unexpected error occurred.';
         } finally {
+            this._stopThinking();
             this._scanning = false;
         }
     }
@@ -439,6 +474,10 @@ export class uAccessibleDashboardElement extends UmbElementMixin(LitElement) {
                 ${this._scanning ? html`
                     <uui-alert>
                         <p>Scanning all pages in sequence — this may take a while for large trees. Each page runs a full axe-core audit in a headless browser.</p>
+                        <div class="thinking-row">
+                            <span class="thinking-icon">${THINKING_STEPS[this._thinkingIdx].icon}</span>
+                            <span class="thinking-message">${THINKING_STEPS[this._thinkingIdx].message}</span>
+                        </div>
                         <div class="scan-progress-track" style="margin-top: 8px;"><div class="scan-progress-fill"></div></div>
                     </uui-alert>
                 ` : nothing}
@@ -956,6 +995,36 @@ export class uAccessibleDashboardElement extends UmbElementMixin(LitElement) {
             .history-load-btn[disabled] {
                 pointer-events: none;
                 opacity: 0.45;
+            }
+
+            .thinking-row {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-top: 10px;
+                min-height: 24px;
+            }
+
+            .thinking-icon {
+                font-size: 16px;
+                line-height: 1;
+                animation: thinking-icon-pop 0.3s ease-out;
+            }
+
+            .thinking-message {
+                font-size: 13px;
+                color: var(--uui-color-text-alt, #6b7280);
+                animation: thinking-fade 0.4s ease-out;
+            }
+
+            @keyframes thinking-icon-pop {
+                from { transform: scale(0.6); opacity: 0; }
+                to   { transform: scale(1);   opacity: 1; }
+            }
+
+            @keyframes thinking-fade {
+                from { opacity: 0; transform: translateX(-4px); }
+                to   { opacity: 1; transform: translateX(0); }
             }
 
             .scan-progress-track {
