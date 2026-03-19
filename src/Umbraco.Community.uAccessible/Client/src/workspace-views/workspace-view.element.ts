@@ -28,7 +28,22 @@ type ViolationDetail = {
     help: string;
     helpUrl: string;
     tags: string[];
+    wcagLevel?: string | null;
     nodes: ViolationNode[];
+};
+
+type ScanHistorySummary = {
+    index: number;
+    scannedAt: string;
+    score: number;
+    grade: string;
+    violationCount: number;
+    criticalCount: number;
+    seriousCount: number;
+    moderateCount: number;
+    minorCount: number;
+    passingCount: number;
+    hasResult: boolean;
 };
 
 type AuditSummary = {
@@ -74,6 +89,17 @@ const IMPACT_BG: Record<string, string> = {
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
+
+function gradeCircleColor(grade: string): string {
+    switch (grade) {
+        case 'A': return '#27ae60';
+        case 'B': return '#2ecc71';
+        case 'C': return '#f39c12';
+        case 'D': return '#e67e22';
+        case 'F': return '#e74c3c';
+        default:  return '#9ca3af';
+    }
+}
 
 function gradeConfig(grade: string): { color: string; ring: string } {
     switch (grade) {
@@ -218,6 +244,7 @@ const svgUsers = html`<svg xmlns="http://www.w3.org/2000/svg" fill="none"
 export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement) {
 
     @state() private _loading = false;
+    @state() private _scanInProgress = false;
     @state() private _result: AuditResult | null = null;
     @state() private _error: string | null = null;
     @state() private _collapsed = new Set<string>();
@@ -228,6 +255,11 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
     @state() private _violationsExpanded = true;
     @state() private _reviewExpanded = true;
     @state() private _passesExpanded = false;
+    @state() private _history: ScanHistorySummary[] = [];
+    @state() private _historyExpanded = false;
+    @state() private _historicalDate: string | null = null;
+    @state() private _historyLoading: number | null = null;
+    @state() private _historicalIndex: number | null = null;
     @state() private _displayScore = 0;
     @state() private _displayGrade = '?';
     @state() private _displayColor: { color: string; ring: string } = { color: '#6b7280', ring: '#9ca3af' };
@@ -245,6 +277,10 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
 
         this.consumeContext(UMB_AUTH_CONTEXT, (ctx) => {
             this._tokenProvider = ctx?.getOpenApiConfiguration().token ?? null;
+            // If the workspace context resolved first we'll already have _unique but
+            // the unauthenticated fetch will have silently failed — retry now that
+            // we have a token provider.
+            if (this._unique && this._history.length === 0) void this._fetchHistory();
         });
 
         this.consumeContext(UMB_NOTIFICATION_CONTEXT, (ctx) => {
@@ -255,6 +291,7 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
             const unique = ctx?.getUnique?.();
             if (!unique) return;
             this._unique = unique;
+            void this._fetchHistory();
         });
     }
 
@@ -268,6 +305,9 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
         this._loading = true;
         this._result  = null;
         this._error   = null;
+        this._historicalDate = null;
+        this._historicalIndex = null;
+        this._historyExpanded = false;
         this._collapsed = new Set();
         this._collapsedIncomplete = new Set();
         this._collapsedPasses = new Set();
@@ -293,10 +333,19 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
                 },
             });
 
+            if (res.status === 409) {
+                this._scanInProgress = true;
+                this._notificationContext?.peek('warning', {
+                    data: { headline: 'Scan already in progress', message: 'Another editor is already scanning this page. Check Scan history shortly for the result.' },
+                });
+                return;
+            }
             if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+            this._scanInProgress = false;
             this._result = await res.json();
 
             if (this._result && !this._result.fetchError) {
+                void this._fetchHistory();
                 this._animateScore(this._result.score ?? 0, this._result.grade);
                 const v = this._result.violations.length;
                 if (v === 0) {
@@ -381,7 +430,22 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
     }
 
     private _wcagTags(tags: string[]): string[] {
-        return tags.filter(t => t.startsWith('wcag') || t === 'best-practice');
+        // Only surface success criterion numbers (e.g. wcag412 → SC 4.1.2)
+        // Strip version/level tags (wcag2a, wcag21aa etc.) and category tags (cat.*)
+        return tags
+            .filter(t => /^wcag\d+$/.test(t))
+            .map(t => {
+                const digits = t.replace('wcag', '');
+                if (digits.length === 3) return `SC ${digits[0]}.${digits[1]}.${digits[2]}`;
+                if (digits.length === 4) return `SC ${digits[0]}.${digits[1]}.${digits.slice(2)}`;
+                return `SC ${digits}`;
+            });
+    }
+
+    private _wcagLevelLabel(level: string | null | undefined): string {
+        if (!level) return '';
+        if (level === 'Best Practice') return 'Best Practice';
+        return `WCAG ${level}`;
     }
 
     // Returns true when the target selector is specific enough to be useful in DevTools
@@ -432,13 +496,195 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
         requestAnimationFrame(step);
     }
 
+    private async _fetchHistory() {
+        if (!this._unique) return;
+        try {
+            const token = this._tokenProvider ? await this._tokenProvider() : undefined;
+            const res = await fetch(`${API_BASE}/audit/history/${this._unique}`, {
+                headers: {
+                    Accept: 'application/json',
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
+            });
+            if (res.ok) {
+                this._history = await res.json();
+                // Auto-expand on initial load (before any scan has been run)
+                if (!this._result && this._history.length > 0) {
+                    this._historyExpanded = true;
+                }
+                // Auto-load most recent result when navigating from the dashboard
+                const autoloadKey = sessionStorage.getItem('uaccessible:autoload');
+                if (autoloadKey === this._unique && this._history.length > 0) {
+                    sessionStorage.removeItem('uaccessible:autoload');
+                    void this._loadHistoryEntry(0, this._history[0].scannedAt);
+                }
+            } else if (res.status === 401 && !token) {
+                // Auth context hadn't resolved yet — the UMB_AUTH_CONTEXT callback
+                // will call us again once the token is available.
+            }
+        } catch {
+            // history is non-critical — silently ignore network failures
+        }
+    }
+
+    private async _loadHistoryEntry(index: number, scannedAt: string) {
+        if (!this._unique) return;
+        this._historyLoading = index;
+        try {
+            const token = this._tokenProvider ? await this._tokenProvider() : undefined;
+            const res = await fetch(`${API_BASE}/audit/history/${this._unique}/${index}`, {
+                headers: {
+                    Accept: 'application/json',
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
+            });
+            if (!res.ok) throw new Error(`Failed to load scan (HTTP ${res.status})`);
+            const loaded: AuditResult = await res.json();
+            this._result = loaded;
+            this._historicalDate = scannedAt;
+            this._historicalIndex = index;
+            this._historyExpanded = false;
+            // Reset any active filter so the loaded report renders fully
+            this._activeImpact = null;
+            this._collapsed = new Set();
+            this._collapsedIncomplete = new Set();
+            this._collapsedPasses = new Set();
+            this._violationsExpanded = true;
+            this._reviewExpanded = true;
+            this._passesExpanded = false;
+            if (loaded && !loaded.fetchError) {
+                this._displayScore = loaded.score;
+                this._displayGrade = loaded.grade;
+                this._displayColor = gradeConfig(loaded.grade);
+                this._displayViolations = loaded.summary.totalViolations;
+                this._displayPasses = loaded.summary.passes;
+                this._displayIncomplete = loaded.summary.incompleteCount;
+                this._displayRules = new Set(loaded.violations.map(v => v.id)).size;
+            }
+        } catch (e: unknown) {
+            const msg = e instanceof Error ? e.message : 'Could not load historical scan.';
+            this._notificationContext?.peek('danger', {
+                data: { headline: 'History load failed', message: msg },
+            });
+        } finally {
+            this._historyLoading = null;
+        }
+    }
+
+    private async _deleteHistoryEntry(index: number) {
+        if (!this._unique) return;
+        try {
+            const token = this._tokenProvider ? await this._tokenProvider() : undefined;
+            await fetch(`${API_BASE}/audit/history/${this._unique}/${index}`, {
+                method: 'DELETE',
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
+            });
+            await this._fetchHistory();
+        } catch {
+            // silently ignore
+        }
+    }
+
+    private async _clearHistory() {
+        if (!this._unique) return;
+        try {
+            const token = this._tokenProvider ? await this._tokenProvider() : undefined;
+            await fetch(`${API_BASE}/audit/history/${this._unique}`, {
+                method: 'DELETE',
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
+            });
+            this._history = [];
+        } catch {
+            // silently ignore
+        }
+    }
+
+    /** Returns score/violation delta vs the previous scan. Only shown for live (non-historical) results. */
+    private _delta(): { score: number; violations: number } | null {
+        if (!this._result || this._historicalDate) return null;
+        const prev = this._history[1]; // [0] = current just-saved, [1] = previous
+        if (!prev) return null;
+        return {
+            score:      (this._result.score ?? 0) - prev.score,
+            violations: (this._result.summary.totalViolations ?? 0) - prev.violationCount,
+        };
+    }
+
+    private _exportCsv() {
+        if (!this._result) return;
+        const rows = [
+            ['Rule ID', 'Impact', 'WCAG Level', 'Rule Name', 'Description', 'Elements Affected', 'First Selector'],
+        ];
+        for (const v of this._result.violations) {
+            rows.push([
+                v.id,
+                v.impact ?? '',
+                v.wcagLevel ?? '',
+                `"${v.help.replace(/"/g, '""')}"`,
+                `"${v.description.replace(/"/g, '""')}"`,
+                String(v.nodes.length),
+                `"${(v.nodes[0]?.target ?? '').replace(/"/g, '""')}"`,
+            ]);
+        }
+        const csv = rows.map(r => r.join(',')).join('\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        const ts = new Date().toISOString().slice(0, 16).replace('T', '_').replace(':', '-');
+        a.download = `uAccessible-violations-${ts}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    private async _exportHistoryEntryCsv(index: number) {
+        if (!this._unique) return;
+        try {
+            const token = this._tokenProvider ? await this._tokenProvider() : undefined;
+            const res = await fetch(`${API_BASE}/audit/history/${this._unique}/${index}`, {
+                headers: { Accept: 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+            });
+            if (!res.ok) return;
+            const result: AuditResult = await res.json();
+            const rows = [
+                ['Rule ID', 'Impact', 'WCAG Level', 'Rule Name', 'Description', 'Elements Affected', 'First Selector'],
+            ];
+            for (const v of result.violations) {
+                rows.push([
+                    v.id,
+                    v.impact ?? '',
+                    v.wcagLevel ?? '',
+                    `"${v.help.replace(/"/g, '""')}"`,
+                    `"${v.description.replace(/"/g, '""')}"`,
+                    String(v.nodes.length),
+                    `"${(v.nodes[0]?.target ?? '').replace(/"/g, '""')}"`,
+                ]);
+            }
+            const csv = rows.map(r => r.join(',')).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const ts = new Date().toISOString().slice(0, 16).replace('T', '_').replace(':', '-');
+            a.download = `uAccessible-violations-${ts}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        } catch { /* silently ignore */ }
+    }
+
     // -----------------------------------------------------------------------
     // Render
     // -----------------------------------------------------------------------
 
     override render() {
         if (this._loading) {
-            return html`<div class="loader"><uui-loader></uui-loader></div>`;
+            return html`
+                <div class="loader-alert-wrap">
+                    <uui-alert>
+                        <p>Running axe-core accessibility audit against the published version of this page — this may take a moment.</p>
+                        <div class="scan-progress-track" style="margin-top: 8px;"><div class="scan-progress-fill"></div></div>
+                    </uui-alert>
+                </div>`;
         }
 
         const isReady = this._result?.published && !this._result.fetchError;
@@ -446,14 +692,9 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
         return html`
             <div class="page-header">
                 <div class="page-header-main">
-                    <img
-                        class="page-logo"
-                        src="/App_Plugins/UmbracoCommunityuAccessible/images/uAccessible_logo.png"
-                        alt="uAccessible"
-                    />
                     <div>
                         <h3 class="page-title">
-                            <strong>uAccessible:</strong> Accessibility Auditor
+                            uAccessible: Accessibility Auditor
                         </h3>
                         <p class="page-description">
                             Scans the last published version of this page using
@@ -463,6 +704,22 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
                     </div>
                 </div>
                 <div class="header-actions">
+                    ${isReady && (this._result?.violations?.length ?? 0) > 0 ? html`
+                        <uui-button look="outline" compact @click=${this._exportCsv} title="Export violations as CSV">
+                            <span class="btn-content">
+                                <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                    stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                    <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                                    <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
+                                    <path d="M8 11h8" />
+                                    <path d="M8 15h5" />
+                                </svg>
+                                Export CSV
+                            </span>
+                        </uui-button>
+                    ` : nothing}
                     ${isReady && this._result?.url ? html`
                         <uui-button look="outline"
                             href=${this._result.url}
@@ -484,7 +741,121 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
                 </div>
             </div>
 
+            ${this._scanInProgress ? html`
+                <uui-alert color="warning" headline="Scan already in progress" style="margin-top: var(--uui-size-space-4);">
+                    Another editor is already scanning this page. The result will appear in <strong>Scan history</strong> shortly — no need to scan again.
+                </uui-alert>
+            ` : nothing}
+
+            ${this._historyLoading !== null ? html`
+                <div class="history-load-bar">
+                    <uui-loader-circle></uui-loader-circle>
+                    <span>Loading historical scan…</span>
+                </div>
+            ` : nothing}
+
             ${this._renderBody()}
+        `;
+    }
+
+    private _renderHistory() {
+        if (this._history.length === 0) return nothing;
+        return html`
+            <div class="history-section">
+                <h4 class="section-heading section-heading--history">
+                    <svg class="section-heading__icon" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                        stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M12 8l0 4l2 2" />
+                        <path d="M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5" />
+                    </svg>
+                    Scan history
+                    <span class="section-heading-count">
+                        (<strong>${this._history.length}</strong>
+                        scan${this._history.length !== 1 ? 's' : ''})
+                    </span>
+                    <uui-button look="outline" compact
+                        @click=${() => { this._historyExpanded = !this._historyExpanded; }}>
+                        <span class="btn-content">
+                            ${this._historyExpanded ? 'Collapse' : 'Show'}
+                            <svg class="btn-icon chevron-icon ${this._historyExpanded ? 'chevron-icon--up' : ''}"
+                                xmlns="http://www.w3.org/2000/svg" fill="none"
+                                stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <path d="M6 9l6 6l6 -6" />
+                            </svg>
+                        </span>
+                    </uui-button>
+                </h4>
+                ${this._historyExpanded ? html`
+                    <div class="exec-card history-table-card">
+                        <table class="history-table">
+                            <thead>
+                                <tr>
+                                    <th>Date of scan</th>
+                                    <th>Grade</th>
+                                    <th>Score</th>
+                                    <th class="th--violations">Violations</th>
+                                    <th class="th--critical">Critical</th>
+                                    <th class="th--serious">Serious</th>
+                                    <th class="th--moderate">Moderate</th>
+                                    <th class="th--minor">Minor</th>
+                                    <th class="th--passes">Passes</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${this._history.map((h) => html`
+                                    <tr class="${h.index === 0 ? 'history-row--latest' : ''} ${this._historicalIndex === h.index ? 'history-row--active' : ''}">
+                                        <td>${new Date(h.scannedAt).toLocaleString()}</td>
+                                        <td><span class="grade-circle" style="color: ${gradeCircleColor(h.grade)};">${h.grade}</span></td>
+                                        <td>${h.score}/100</td>
+                                        <td><span class="count-badge count-badge--violations">${h.violationCount}</span></td>
+                                        <td><span class="count-badge count-badge--critical">${h.criticalCount}</span></td>
+                                        <td><span class="count-badge count-badge--serious">${h.seriousCount}</span></td>
+                                        <td><span class="count-badge count-badge--moderate">${h.moderateCount ?? 0}</span></td>
+                                        <td><span class="count-badge count-badge--minor">${h.minorCount ?? 0}</span></td>
+                                        <td><span class="count-badge count-badge--passes">${h.passingCount ?? 0}</span></td>
+                                        <td class="history-actions">
+                                            <uui-button look="${this._historicalIndex === h.index ? 'primary' : 'outline'}" compact
+                                                class="history-load-btn"
+                                                ?disabled=${this._historyLoading === h.index}
+                                                @click=${() => this._loadHistoryEntry(h.index, h.scannedAt)}>
+                                                ${this._historyLoading === h.index ? html`<uui-loader-circle></uui-loader-circle>` : (this._historicalIndex === h.index ? 'Loaded' : 'Load')}
+                                            </uui-button>
+                                            <uui-button look="outline" compact
+                                                @click=${() => this._exportHistoryEntryCsv(h.index)}
+                                                title="Export this scan's violations as CSV">
+                                                    <span class="btn-content">
+                                                        <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+                                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                            <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                                                            <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
+                                                            <path d="M8 11h8" /><path d="M8 15h5" />
+                                                        </svg>
+                                                        Export CSV
+                                                    </span>
+                                                </uui-button>
+                                            <uui-button look="primary" compact color="danger"
+                                                @click=${() => this._deleteHistoryEntry(h.index)}
+                                                title="Delete this scan entry">
+                                                Delete
+                                            </uui-button>
+                                        </td>
+                                    </tr>
+                                `)}
+                            </tbody>
+                        </table>
+                        <div class="history-footer">
+                            <uui-button look="primary" compact color="danger" @click=${this._clearHistory}>
+                                Clear all history
+                            </uui-button>
+                        </div>
+                    </div>
+                ` : nothing}
+            </div>
         `;
     }
 
@@ -495,8 +866,12 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
 
         if (!this._result) {
             return html`
+                ${this._renderHistory()}
                 <uui-alert>
-                    <p class="state-msg">Click <strong>Run Audit</strong> to check this page for accessibility issues against its last published version.</p>
+                    <p class="state-msg">
+                        Click <strong>Run Audit</strong> to check this page for accessibility issues against its last published version.
+                        ${this._history.length > 0 ? html` Or <strong>load a past scan</strong> from history above.` : nothing}
+                    </p>
                     <p class="state-hint">Powered by axe-core &mdash; checks WCAG 2.0, 2.1 &amp; 2.2 (Levels A &amp; AA)</p>
                 </uui-alert>
             `;
@@ -529,14 +904,50 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
         const filtered = this._filteredViolations();
         const quickWins = this._quickWins();
         const audiences = this._audiences();
+        const delta = this._delta();
 
         return html`
+            <!-- ── Historical scan context card ── -->
+            ${this._historicalDate ? html`
+                <div class="exec-card historical-card">
+                    <div class="historical-card__header">
+                        <svg class="historical-card__icon" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                            stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <path d="M12 8l0 4l2 2" />
+                            <path d="M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5" />
+                        </svg>
+                        <div class="historical-card__content">
+                            <span class="historical-card__label">Historical scan</span>
+                            <span class="historical-card__date">${new Date(this._historicalDate).toLocaleString()}</span>
+                            ${this._historicalIndex !== null ? html`
+                                <span class="historical-card__meta">Entry ${this._historicalIndex + 1} of ${this._history.length} — not the latest result</span>
+                            ` : nothing}
+                        </div>
+                        <uui-button look="primary" color="positive" compact @click=${this._runAudit}>
+                            Run fresh audit
+                        </uui-button>
+                    </div>
+                </div>
+            ` : nothing}
+
+            <!-- ── Scan history ── -->
+            ${this._renderHistory()}
+
             <!-- ── Grade ring + stat cards row ── -->
             <div class="top-row">
                 <!-- Grade ring -->
-                <div class="grade-ring" style="--ring-color: ${this._displayColor.ring}; --text-color: ${this._displayColor.color}">
-                    <span class="grade-ring__letter">${this._displayGrade}</span>
-                    <span class="grade-ring__score">${this._displayScore}/100</span>
+                <div class="grade-ring-wrap">
+                    <div class="grade-ring" style="--ring-color: ${this._displayColor.ring}; --text-color: ${this._displayColor.color}">
+                        <span class="grade-ring__letter">${this._displayGrade}</span>
+                        <span class="grade-ring__score">${this._displayScore}/100</span>
+                    </div>
+                    ${delta && delta.score !== 0 ? html`
+                        <span class="grade-delta ${delta.score > 0 ? 'grade-delta--up' : 'grade-delta--down'}">
+                            ${delta.score > 0 ? '▲' : '▼'} ${Math.abs(delta.score)} pts
+                        </span>
+                    ` : nothing}
                 </div>
 
                 <!-- Stat cards -->
@@ -544,7 +955,14 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
                     <div class="stat-card stat-card--violations">
                         <div class="stat-card__icon">${svgStatViolation}</div>
                         <div class="stat-card__info">
-                            <span class="stat-card__value">${this._displayViolations}</span>
+                            <div class="stat-card__value-row">
+                                <span class="stat-card__value">${this._displayViolations}</span>
+                                ${delta && delta.violations !== 0 ? html`
+                                    <span class="delta-badge ${delta.violations > 0 ? 'delta-badge--down' : 'delta-badge--up'}">
+                                        ${delta.violations > 0 ? '▲' : '▼'}${Math.abs(delta.violations)}
+                                    </span>
+                                ` : nothing}
+                            </div>
                             <span class="stat-card__label">Violations</span>
                         </div>
                     </div>
@@ -791,8 +1209,9 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
                         ${impact.charAt(0).toUpperCase() + impact.slice(1)}
                     </span>
                     <span class="block-headline__text">${v.help}</span>
-                    ${wcagTags.length > 0 ? html`
+                    ${(v.wcagLevel || wcagTags.length > 0) ? html`
                         <div class="block-headline__tags">
+                            ${v.wcagLevel ? html`<span class="wcag-badge wcag-badge--${v.wcagLevel.toLowerCase().replace(' ', '-')}">${this._wcagLevelLabel(v.wcagLevel)}</span>` : nothing}
                             ${wcagTags.map(tag => html`<span class="tag">${tag}</span>`)}
                         </div>
                     ` : nothing}
@@ -1000,12 +1419,6 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
             gap: var(--uui-size-space-5);
         }
 
-        .page-logo {
-            width: 100px;
-            height: 100px;
-            flex-shrink: 0;
-            object-fit: contain;
-        }
 
         .page-title {
             margin: 0 0 var(--uui-size-space-2);
@@ -1045,8 +1458,38 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
 
         .loader {
             display: flex;
+            flex-direction: column;
             justify-content: center;
+            align-items: center;
+            gap: var(--uui-size-space-3);
             padding: var(--uui-size-layout-3);
+        }
+        .loader-text {
+            font-size: 13px;
+            color: var(--uui-color-text-alt);
+        }
+        .loader-alert-wrap {
+            padding: var(--uui-size-layout-1);
+        }
+
+        .scan-progress-track {
+            width: 100%;
+            height: 4px;
+            background: var(--uui-color-border);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .scan-progress-fill {
+            height: 100%;
+            width: 40%;
+            background: var(--uui-color-positive, #27ae60);
+            border-radius: 2px;
+            animation: scan-progress-anim 1.8s ease-in-out infinite;
+        }
+        @keyframes scan-progress-anim {
+            0%   { transform: translateX(-100%); width: 40%; }
+            50%  { width: 60%; }
+            100% { transform: translateX(350%); width: 40%; }
         }
 
         /* ── State messages ──────────────────────────────────────── */
@@ -1089,6 +1532,43 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
 
         /* ── Top row: grade ring + stat cards ───────────────────── */
 
+        .stat-card__value-row {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+
+        .delta-badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 1px 5px;
+            border-radius: 3px;
+            line-height: 1.3;
+            flex-shrink: 0;
+        }
+
+        .delta-badge--up   { background: rgba(39,174,96,0.14);  color: #1a7a4a; }
+        .delta-badge--down { background: rgba(192,57,43,0.14);  color: #c0392b; }
+
+        .grade-ring-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--uui-size-space-2);
+            flex-shrink: 0;
+        }
+
+        .grade-delta {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 99px;
+            white-space: nowrap;
+        }
+
+        .grade-delta--up   { background: rgba(39,174,96,0.14);  color: #1a7a4a; }
+        .grade-delta--down { background: rgba(192,57,43,0.14);  color: #c0392b; }
+
         .top-row {
             display: flex;
             align-items: stretch;
@@ -1100,7 +1580,6 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
         /* Grade ring */
 
         .grade-ring {
-            flex-shrink: 0;
             width: 88px;
             height: 88px;
             border-radius: 50%;
@@ -1732,7 +2211,8 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
 
         .section-heading--violations uui-button,
         .section-heading--review uui-button,
-        .section-heading--passes uui-button {
+        .section-heading--passes uui-button,
+        .section-heading--history uui-button {
             margin-left: auto;
             flex-shrink: 0;
         }
@@ -1780,6 +2260,182 @@ export class uAccessibleWorkspaceViewElement extends UmbElementMixin(LitElement)
             font-size: 12px;
             color: var(--uui-color-text-alt, #6b7280);
         }
+
+        /* ── WCAG level badge — matches .tag pill style ──────────── */
+
+        .wcag-badge {
+            padding: 2px 8px;
+            border-radius: 99px;
+            font-size: 11px;
+            font-weight: 600;
+            flex-shrink: 0;
+            background: color-mix(in srgb, var(--uui-color-interactive, #3544b1) 10%, transparent);
+            color: var(--uui-color-interactive, #1e3a8a);
+            border: 1px solid color-mix(in srgb, var(--uui-color-interactive, #3544b1) 20%, transparent);
+        }
+
+        /* ── History load bar ────────────────────────────────────── */
+
+        .history-load-bar {
+            display: flex;
+            align-items: center;
+            gap: var(--uui-size-space-3);
+            padding: var(--uui-size-space-3) var(--uui-size-space-4);
+            border-radius: var(--uui-border-radius, 3px);
+            background: color-mix(in srgb, var(--uui-color-interactive, #3544b1) 6%, transparent);
+            border: 1px solid color-mix(in srgb, var(--uui-color-interactive, #3544b1) 25%, transparent);
+            font-size: 13px;
+            color: var(--uui-color-text, #1a1a1a);
+        }
+
+        /* ── Historical scan context card ────────────────────────── */
+
+        .historical-card {
+            margin-bottom: var(--uui-size-layout-1);
+        }
+
+        .historical-card__header {
+            display: flex;
+            align-items: center;
+            gap: var(--uui-size-space-4);
+        }
+
+        .historical-card__icon {
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+            color: var(--uui-color-text-alt, #6b7280);
+        }
+
+        .historical-card__content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
+        }
+
+        .historical-card__label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--uui-color-text-alt, #6b7280);
+        }
+
+        .historical-card__date {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--uui-color-text, #1a1a1a);
+        }
+
+        .historical-card__meta {
+            font-size: 12px;
+            color: var(--uui-color-text-alt, #6b7280);
+        }
+
+        /* ── Scan history ────────────────────────────────────────── */
+
+        .history-section {
+            margin-bottom: var(--uui-size-layout-1);
+        }
+
+        .history-row--latest td {
+            font-weight: 600;
+        }
+
+        .history-row--active td {
+            background: color-mix(in srgb, var(--uui-color-interactive, #3544b1) 6%, transparent);
+        }
+
+        .history-load-btn {
+            min-width: 4.5rem;
+        }
+        .history-action-disabled {
+            display: inline-block;
+            opacity: 0.35;
+            pointer-events: none;
+            cursor: not-allowed;
+        }
+
+        .history-actions {
+            display: flex;
+            gap: var(--uui-size-space-2);
+            white-space: nowrap;
+        }
+
+        .history-footer {
+            padding: var(--uui-size-space-3) 0 0;
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .history-table th,
+        .history-table td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--uui-color-border, #d8d7d9);
+        }
+
+        .history-table thead th {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--uui-color-text-alt, #6b7280);
+            background: var(--uui-color-surface, #fff);
+        }
+        .history-table thead th.th--violations { color: #8b1a1a; }
+        .history-table thead th.th--critical   { color: #c0392b; }
+        .history-table thead th.th--serious    { color: #d35400; }
+        .history-table thead th.th--moderate   { color: #b7770d; }
+        .history-table thead th.th--minor      { color: #2471a3; }
+        .history-table thead th.th--passes     { color: #1a7a4a; }
+
+        .history-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .history-table tbody tr:first-child td {
+            font-weight: 600;
+        }
+
+        .history-grade {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: 3px;
+        }
+
+        .history-grade--a { background: rgba(39,174,96,0.15);  color: #1a7a4a; }
+        .history-grade--b { background: rgba(46,204,113,0.15); color: #1a6b2a; }
+        .history-grade--c { background: rgba(243,156,18,0.15); color: #b7770d; }
+        .history-grade--d { background: rgba(230,126,34,0.15); color: #d35400; }
+        .history-grade--f { background: rgba(231,76,60,0.15);  color: #c0392b; }
+
+        .grade-circle {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 28px; height: 28px; border-radius: 50%;
+            border: 2px solid currentColor;
+            background: color-mix(in srgb, currentColor 15%, transparent);
+            font-weight: 800; font-size: 12px; flex-shrink: 0;
+        }
+
+        .count-badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 3px; }
+        .count-badge--violations { background: rgba(139,26,26,0.12);  color: #8b1a1a; }
+        .count-badge--critical   { background: rgba(192,57,43,0.12);  color: #c0392b; }
+        .count-badge--serious    { background: rgba(211,84,0,0.12);   color: #d35400; }
+        .count-badge--moderate   { background: rgba(183,119,13,0.12); color: #b7770d; }
+        .count-badge--minor      { background: rgba(36,113,163,0.12); color: #2471a3; }
+        .count-badge--passes     { background: rgba(39,174,96,0.12);  color: #1a7a4a; }
+        .count-zero { color: var(--uui-color-text-alt, #9ca3af); font-size: 13px; }
     `;
 }
 

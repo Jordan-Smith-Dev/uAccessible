@@ -9,6 +9,7 @@ using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.DependencyInjection;
 using Umbraco.Cms.Api.Management.OpenApi;
 using Umbraco.Cms.Api.Common.OpenApi;
+using Umbraco.Community.uAccessible.Configuration;
 using Umbraco.Community.uAccessible.Services;
 
 namespace Umbraco.Community.uAccessible.Composers
@@ -18,6 +19,11 @@ namespace Umbraco.Community.uAccessible.Composers
         public void Compose(IUmbracoBuilder builder)
         {
             builder.Services.AddScoped<AxeScanService>();
+            builder.Services.AddSingleton<ScanHistoryService>();
+            builder.Services.AddSingleton<SiteAuditHistoryService>();
+            builder.Services.AddSingleton<ScanLockService>();
+            builder.Services.Configure<UAccessibleSettings>(
+                builder.Config.GetSection(UAccessibleSettings.SectionName));
 
             builder.Services.AddSingleton<IOperationIdHandler, CustomOperationHandler>();
 

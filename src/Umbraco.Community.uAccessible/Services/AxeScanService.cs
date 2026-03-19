@@ -112,6 +112,78 @@ namespace Umbraco.Community.uAccessible.Services
             return BuildResult(url, axeResults);
         }
 
+        public async Task<List<AuditResult>> ScanUrlsAsync(IEnumerable<string> urls, CancellationToken ct = default)
+        {
+            var urlList = urls.ToList();
+            var results = new List<AuditResult>(urlList.Count);
+
+            IPlaywright playwright;
+            try { playwright = await Microsoft.Playwright.Playwright.CreateAsync(); }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "uAccessible: Playwright could not initialise.");
+                return urlList.Select(u => new AuditResult
+                {
+                    Url = u, Published = true,
+                    FetchError = "Playwright could not initialise. Run 'pwsh playwright.ps1 install chromium'."
+                }).ToList();
+            }
+
+            IBrowser browser;
+            try { browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = true }); }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "uAccessible: Chromium could not launch.");
+                return urlList.Select(u => new AuditResult
+                {
+                    Url = u, Published = true,
+                    FetchError = "Chromium is not installed. Run 'pwsh playwright.ps1 install chromium'."
+                }).ToList();
+            }
+
+            await using var _ = browser;
+            foreach (var url in urlList)
+            {
+                if (ct.IsCancellationRequested) break;
+                results.Add(await ScanWithBrowser(browser, url, ct));
+            }
+            return results;
+        }
+
+        private static async Task<AuditResult> ScanWithBrowser(IBrowser browser, string url, CancellationToken ct)
+        {
+            var page = await browser.NewPageAsync();
+            try
+            {
+                var response = await page.GotoAsync(url, new PageGotoOptions
+                {
+                    WaitUntil = WaitUntilState.NetworkIdle,
+                    Timeout   = 30_000,
+                });
+
+                if (response is null || !response.Ok)
+                    return new AuditResult { Url = url, Published = true, FetchError = $"Page returned HTTP {response?.Status ?? 0}." };
+
+                AxeResult axeResults;
+                try { axeResults = await page.RunAxe(); }
+                catch (Exception ex) { return new AuditResult { Url = url, Published = true, FetchError = $"Scan failed: {ex.Message}" }; }
+
+                return BuildResult(url, axeResults);
+            }
+            catch (TimeoutException)
+            {
+                return new AuditResult { Url = url, Published = true, FetchError = "Page load timed out after 30 seconds." };
+            }
+            catch (Exception ex)
+            {
+                return new AuditResult { Url = url, Published = true, FetchError = $"Could not load the page: {ex.Message}" };
+            }
+            finally
+            {
+                await page.CloseAsync();
+            }
+        }
+
         private static AuditResult BuildResult(string url, AxeResult axeResults)
         {
             var violations     = axeResults.Violations.Select(MapViolation).ToList();
@@ -151,6 +223,7 @@ namespace Umbraco.Community.uAccessible.Services
             Help        = item.Help,
             HelpUrl     = item.HelpUrl,
             Tags        = item.Tags,
+            WcagLevel   = ParseWcagLevel(item.Tags),
             Nodes       = item.Nodes.Select(n => new ViolationNode
             {
                 Html           = n.Html,
@@ -162,6 +235,20 @@ namespace Umbraco.Community.uAccessible.Services
                         .Select(c => c.Message)),
             }).ToArray(),
         };
+
+        private static string? ParseWcagLevel(string[] tags)
+        {
+            // axe-core tags: wcag2a, wcag2aa, wcag2aaa, wcag21a, wcag21aa, wcag22aa, best-practice
+            if (tags.Any(t => t.EndsWith("aaa", StringComparison.OrdinalIgnoreCase)))
+                return "AAA";
+            if (tags.Any(t => t.EndsWith("aa", StringComparison.OrdinalIgnoreCase)))
+                return "AA";
+            if (tags.Any(t => System.Text.RegularExpressions.Regex.IsMatch(t, @"wcag\d+a$", System.Text.RegularExpressions.RegexOptions.IgnoreCase)))
+                return "A";
+            if (tags.Contains("best-practice", StringComparer.OrdinalIgnoreCase))
+                return "Best Practice";
+            return null;
+        }
 
         private static int ComputeScore(IList<ViolationDetail> violations)
         {

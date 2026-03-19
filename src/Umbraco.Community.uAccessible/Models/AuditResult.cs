@@ -32,6 +32,7 @@ namespace Umbraco.Community.uAccessible.Models
         public string Help { get; set; } = "";
         public string HelpUrl { get; set; } = "";
         public string[] Tags { get; set; } = [];
+        public string? WcagLevel { get; set; }
         public ViolationNode[] Nodes { get; set; } = [];
     }
 

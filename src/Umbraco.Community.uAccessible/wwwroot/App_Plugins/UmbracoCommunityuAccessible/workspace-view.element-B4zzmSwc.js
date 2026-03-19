@@ -1,25 +1,41 @@
-import { LitElement as A, html as s, nothing as l, css as I, state as p, customElement as P } from "@umbraco-cms/backoffice/external/lit";
-import { UmbElementMixin as T } from "@umbraco-cms/backoffice/element-api";
+import { LitElement as P, html as t, nothing as l, css as L, state as p, customElement as H } from "@umbraco-cms/backoffice/external/lit";
+import { UmbElementMixin as j } from "@umbraco-cms/backoffice/element-api";
 import { UMB_DOCUMENT_WORKSPACE_CONTEXT as B } from "@umbraco-cms/backoffice/document";
 import { UMB_AUTH_CONTEXT as R } from "@umbraco-cms/backoffice/auth";
-import { UMB_NOTIFICATION_CONTEXT as j } from "@umbraco-cms/backoffice/notification";
-var q = Object.defineProperty, O = Object.getOwnPropertyDescriptor, d = (e, t, a, i) => {
-  for (var r = i > 1 ? void 0 : i ? O(t, a) : t, n = e.length - 1, o; n >= 0; n--)
-    (o = e[n]) && (r = (i ? o(t, a, r) : o(r)) || r);
-  return i && r && q(t, a, r), r;
+import { UMB_NOTIFICATION_CONTEXT as q } from "@umbraco-cms/backoffice/notification";
+var T = Object.defineProperty, D = Object.getOwnPropertyDescriptor, d = (e, s, a, i) => {
+  for (var r = i > 1 ? void 0 : i ? D(s, a) : s, o = e.length - 1, u; o >= 0; o--)
+    (u = e[o]) && (r = (i ? u(s, a, r) : u(r)) || r);
+  return i && r && T(s, a, r), r;
 };
-const H = "/umbraco/umbracommunityuaccessible/api/v1", V = ["critical", "serious", "moderate", "minor"], z = {
+const b = "/umbraco/umbracommunityuaccessible/api/v1", O = ["critical", "serious", "moderate", "minor"], C = {
   critical: "#c0392b",
   serious: "#d35400",
   moderate: "#b7770d",
   minor: "#2471a3"
-}, C = {
+}, S = {
   critical: "rgba(192,57,43,0.12)",
   serious: "rgba(211,84,0,0.12)",
   moderate: "rgba(183,119,13,0.12)",
   minor: "rgba(36,113,163,0.10)"
 };
-function G(e) {
+function V(e) {
+  switch (e) {
+    case "A":
+      return "#27ae60";
+    case "B":
+      return "#2ecc71";
+    case "C":
+      return "#f39c12";
+    case "D":
+      return "#e67e22";
+    case "F":
+      return "#e74c3c";
+    default:
+      return "#9ca3af";
+  }
+}
+function E(e) {
   switch (e) {
     case "A":
       return { color: "#1a7a4a", ring: "#27ae60" };
@@ -35,8 +51,8 @@ function G(e) {
       return { color: "#6b7280", ring: "#9ca3af" };
   }
 }
-function L(e) {
-  const t = {
+function G(e) {
+  const s = {
     "cat.color": "Low vision",
     "cat.keyboard": "Keyboard users",
     "cat.screen-reader": "Screen reader users",
@@ -53,10 +69,10 @@ function L(e) {
     "best-practice": "All users"
   }, a = /* @__PURE__ */ new Set();
   for (const i of e)
-    t[i] && a.add(t[i]);
+    s[i] && a.add(s[i]);
   return [...a];
 }
-function S(e) {
+function M(e) {
   switch (e) {
     case "minor":
       return "Low";
@@ -69,39 +85,39 @@ function S(e) {
       return "Unknown";
   }
 }
-const _ = s`<svg class="btn-icon" xmlns="http://www.w3.org/2000/svg"
+const x = t`<svg class="btn-icon" xmlns="http://www.w3.org/2000/svg"
     fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
     stroke-width="2" viewBox="0 0 24 24">
     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
     <path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" />
     <path d="M11 13l9 -9" />
     <path d="M15 4h5v5" />
-</svg>`, U = s`<svg class="btn-icon" xmlns="http://www.w3.org/2000/svg"
+</svg>`, U = t`<svg class="btn-icon" xmlns="http://www.w3.org/2000/svg"
     fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
     stroke-width="1.75" viewBox="0 0 24 24">
     <path d="M21 2v6h-6"/>
     <path d="M21 13a9 9 0 1 1-3-7.7L21 8"/>
-</svg>`, D = s`<svg xmlns="http://www.w3.org/2000/svg" fill="none"
+</svg>`, F = t`<svg xmlns="http://www.w3.org/2000/svg" fill="none"
     stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
     stroke-width="2" viewBox="0 0 24 24">
     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
     <path d="M12 9v4" />
     <path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.871l-8.106 -13.534a1.914 1.914 0 0 0 -3.274 0z" />
     <path d="M12 16h.01" />
-</svg>`, F = s`<svg xmlns="http://www.w3.org/2000/svg" fill="none"
+</svg>`, W = t`<svg xmlns="http://www.w3.org/2000/svg" fill="none"
     stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
     stroke-width="2" viewBox="0 0 24 24">
     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
     <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
     <path d="M9 12l2 2l4 -4" />
-</svg>`, W = s`<svg xmlns="http://www.w3.org/2000/svg" fill="none"
+</svg>`, N = t`<svg xmlns="http://www.w3.org/2000/svg" fill="none"
     stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
     stroke-width="2" viewBox="0 0 24 24">
     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
     <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" />
     <path d="M12 9h.01" />
     <path d="M11 12h1v4h1" />
-</svg>`, N = s`<svg xmlns="http://www.w3.org/2000/svg" fill="none"
+</svg>`, X = t`<svg xmlns="http://www.w3.org/2000/svg" fill="none"
     stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
     stroke-width="1.75" viewBox="0 0 24 24">
     <line x1="8" y1="6" x2="21" y2="6"/>
@@ -110,25 +126,25 @@ const _ = s`<svg class="btn-icon" xmlns="http://www.w3.org/2000/svg"
     <line x1="3" y1="6" x2="3.01" y2="6"/>
     <line x1="3" y1="12" x2="3.01" y2="12"/>
     <line x1="3" y1="18" x2="3.01" y2="18"/>
-</svg>`, X = s`<svg xmlns="http://www.w3.org/2000/svg" fill="none"
+</svg>`, K = t`<svg xmlns="http://www.w3.org/2000/svg" fill="none"
     stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
     stroke-width="2" viewBox="0 0 24 24">
     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
     <path d="M13 3l0 7l6 0l-8 11l0 -7l-6 0l8 -11" />
-</svg>`, K = s`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+</svg>`, Q = t`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
     stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
     class="reason-icon">
     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
     <path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
     <path d="M12 8v4" />
     <path d="M12 16h.01" />
-</svg>`, Q = s`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+</svg>`, Y = t`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
     stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
     class="reason-icon reason-icon--pass">
     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
     <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
     <path d="M9 12l2 2l4 -4" />
-</svg>`, Y = s`<svg xmlns="http://www.w3.org/2000/svg" fill="none"
+</svg>`, J = t`<svg xmlns="http://www.w3.org/2000/svg" fill="none"
     stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
     stroke-width="1.75" viewBox="0 0 24 24">
     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
@@ -136,47 +152,53 @@ const _ = s`<svg class="btn-icon" xmlns="http://www.w3.org/2000/svg"
     <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
     <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
 </svg>`;
-let c = class extends T(A) {
+let c = class extends j(P) {
   constructor() {
-    super(...arguments), this._loading = !1, this._result = null, this._error = null, this._collapsed = /* @__PURE__ */ new Set(), this._collapsedIncomplete = /* @__PURE__ */ new Set(), this._collapsedPasses = /* @__PURE__ */ new Set(), this._activeImpact = null, this._allCollapsed = !1, this._violationsExpanded = !0, this._reviewExpanded = !0, this._passesExpanded = !1, this._displayScore = 0, this._displayGrade = "?", this._displayColor = { color: "#6b7280", ring: "#9ca3af" }, this._displayViolations = 0, this._displayPasses = 0, this._displayIncomplete = 0, this._displayRules = 0, this._unique = null, this._tokenProvider = null, this._notificationContext = null;
+    super(...arguments), this._loading = !1, this._scanInProgress = !1, this._result = null, this._error = null, this._collapsed = /* @__PURE__ */ new Set(), this._collapsedIncomplete = /* @__PURE__ */ new Set(), this._collapsedPasses = /* @__PURE__ */ new Set(), this._activeImpact = null, this._allCollapsed = !1, this._violationsExpanded = !0, this._reviewExpanded = !0, this._passesExpanded = !1, this._history = [], this._historyExpanded = !1, this._historicalDate = null, this._historyLoading = null, this._historicalIndex = null, this._displayScore = 0, this._displayGrade = "?", this._displayColor = { color: "#6b7280", ring: "#9ca3af" }, this._displayViolations = 0, this._displayPasses = 0, this._displayIncomplete = 0, this._displayRules = 0, this._unique = null, this._tokenProvider = null, this._notificationContext = null;
   }
   connectedCallback() {
     super.connectedCallback(), this.consumeContext(R, (e) => {
-      this._tokenProvider = (e == null ? void 0 : e.getOpenApiConfiguration().token) ?? null;
-    }), this.consumeContext(j, (e) => {
+      this._tokenProvider = (e == null ? void 0 : e.getOpenApiConfiguration().token) ?? null, this._unique && this._history.length === 0 && this._fetchHistory();
+    }), this.consumeContext(q, (e) => {
       this._notificationContext = e ?? null;
     }), this.consumeContext(B, async (e) => {
       var a;
-      const t = (a = e == null ? void 0 : e.getUnique) == null ? void 0 : a.call(e);
-      t && (this._unique = t);
+      const s = (a = e == null ? void 0 : e.getUnique) == null ? void 0 : a.call(e);
+      s && (this._unique = s, this._fetchHistory());
     });
   }
   // -----------------------------------------------------------------------
   // API call
   // -----------------------------------------------------------------------
   async _runAudit() {
-    var e, t;
+    var e, s, a;
     if (this._unique) {
-      this._loading = !0, this._result = null, this._error = null, this._collapsed = /* @__PURE__ */ new Set(), this._collapsedIncomplete = /* @__PURE__ */ new Set(), this._collapsedPasses = /* @__PURE__ */ new Set(), this._activeImpact = null, this._allCollapsed = !1, this._violationsExpanded = !0, this._reviewExpanded = !0, this._passesExpanded = !1, this._displayScore = 0, this._displayGrade = "?", this._displayColor = { color: "#6b7280", ring: "#9ca3af" }, this._displayViolations = 0, this._displayPasses = 0, this._displayIncomplete = 0, this._displayRules = 0;
+      this._loading = !0, this._result = null, this._error = null, this._historicalDate = null, this._historicalIndex = null, this._historyExpanded = !1, this._collapsed = /* @__PURE__ */ new Set(), this._collapsedIncomplete = /* @__PURE__ */ new Set(), this._collapsedPasses = /* @__PURE__ */ new Set(), this._activeImpact = null, this._allCollapsed = !1, this._violationsExpanded = !0, this._reviewExpanded = !0, this._passesExpanded = !1, this._displayScore = 0, this._displayGrade = "?", this._displayColor = { color: "#6b7280", ring: "#9ca3af" }, this._displayViolations = 0, this._displayPasses = 0, this._displayIncomplete = 0, this._displayRules = 0;
       try {
-        const a = this._tokenProvider ? await this._tokenProvider() : void 0, i = await fetch(`${H}/audit/key/${this._unique}`, {
+        const i = this._tokenProvider ? await this._tokenProvider() : void 0, r = await fetch(`${b}/audit/key/${this._unique}`, {
           headers: {
             Accept: "application/json",
-            ...a ? { Authorization: `Bearer ${a}` } : {}
+            ...i ? { Authorization: `Bearer ${i}` } : {}
           }
         });
-        if (!i.ok) throw new Error(`${i.status} ${i.statusText}`);
-        if (this._result = await i.json(), this._result && !this._result.fetchError) {
-          this._animateScore(this._result.score ?? 0, this._result.grade);
-          const r = this._result.violations.length;
-          r === 0 ? (e = this._notificationContext) == null || e.peek("positive", {
+        if (r.status === 409) {
+          this._scanInProgress = !0, (e = this._notificationContext) == null || e.peek("warning", {
+            data: { headline: "Scan already in progress", message: "Another editor is already scanning this page. Check Scan history shortly for the result." }
+          });
+          return;
+        }
+        if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
+        if (this._scanInProgress = !1, this._result = await r.json(), this._result && !this._result.fetchError) {
+          this._fetchHistory(), this._animateScore(this._result.score ?? 0, this._result.grade);
+          const o = this._result.violations.length;
+          o === 0 ? (s = this._notificationContext) == null || s.peek("positive", {
             data: { headline: "No violations found", message: `Grade ${this._result.grade} — all automated checks passed.` }
-          }) : (t = this._notificationContext) == null || t.peek("danger", {
-            data: { headline: `${r} violation${r !== 1 ? "s" : ""} found`, message: `Grade ${this._result.grade}` }
+          }) : (a = this._notificationContext) == null || a.peek("danger", {
+            data: { headline: `${o} violation${o !== 1 ? "s" : ""} found`, message: `Grade ${this._result.grade}` }
           });
         }
-      } catch (a) {
-        this._error = a instanceof Error ? a.message : "An unexpected error occurred.";
+      } catch (i) {
+        this._error = i instanceof Error ? i.message : "An unexpected error occurred.";
       } finally {
         this._loading = !1;
       }
@@ -185,8 +207,8 @@ let c = class extends T(A) {
   // -----------------------------------------------------------------------
   // Helpers
   // -----------------------------------------------------------------------
-  _toggleItem(e, t) {
-    const a = new Set(t);
+  _toggleItem(e, s) {
+    const a = new Set(s);
     return a.has(e) ? a.delete(e) : a.add(e), a;
   }
   _toggleAll() {
@@ -195,61 +217,187 @@ let c = class extends T(A) {
   _filteredViolations() {
     if (!this._result) return [];
     const e = this._result.violations;
-    return this._activeImpact ? e.filter((t) => t.impact === this._activeImpact) : e;
+    return this._activeImpact ? e.filter((s) => s.impact === this._activeImpact) : e;
   }
   _quickWins() {
     if (!this._result) return [];
     const e = ["minor", "moderate", "serious", "critical"];
-    return [...this._result.violations].sort((t, a) => {
-      const i = e.indexOf(t.impact ?? "minor"), r = e.indexOf(a.impact ?? "minor");
-      return i !== r ? i - r : t.nodes.length - a.nodes.length;
+    return [...this._result.violations].sort((s, a) => {
+      const i = e.indexOf(s.impact ?? "minor"), r = e.indexOf(a.impact ?? "minor");
+      return i !== r ? i - r : s.nodes.length - a.nodes.length;
     }).slice(0, 5);
   }
   _audiences() {
     if (!this._result) return [];
     const e = /* @__PURE__ */ new Set();
-    for (const t of this._result.violations)
-      for (const a of L(t.tags)) e.add(a);
+    for (const s of this._result.violations)
+      for (const a of G(s.tags)) e.add(a);
     return [...e];
   }
   _uniqueRulesCount() {
     return this._result ? new Set(this._result.violations.map((e) => e.id)).size : 0;
   }
   _wcagTags(e) {
-    return e.filter((t) => t.startsWith("wcag") || t === "best-practice");
+    return e.filter((s) => /^wcag\d+$/.test(s)).map((s) => {
+      const a = s.replace("wcag", "");
+      return a.length === 3 ? `SC ${a[0]}.${a[1]}.${a[2]}` : a.length === 4 ? `SC ${a[0]}.${a[1]}.${a.slice(2)}` : `SC ${a}`;
+    });
+  }
+  _wcagLevelLabel(e) {
+    return e ? e === "Best Practice" ? "Best Practice" : `WCAG ${e}` : "";
   }
   // Returns true when the target selector is specific enough to be useful in DevTools
   // (i.e. not just a bare tag name like "h4" or "p")
   _isSpecificSelector(e) {
     return /[#.\s>+~\[:]/.test(e);
   }
-  _animateScore(e, t) {
-    var w, k, y;
-    const i = performance.now(), r = G(t), n = ["A", "B", "C", "D", "F"], o = Math.max(0, n.indexOf(t)), g = 25, u = ((o - g) % n.length + n.length) % n.length, v = ((w = this._result) == null ? void 0 : w.summary.totalViolations) ?? 0, h = ((k = this._result) == null ? void 0 : k.summary.passes) ?? 0, m = ((y = this._result) == null ? void 0 : y.summary.incompleteCount) ?? 0, x = this._uniqueRulesCount(), b = (M) => {
-      const E = M - i, $ = Math.min(E / 1800, 1), f = 1 - Math.pow(1 - $, 3);
-      this._displayScore = Math.round(f * e), this._displayGrade = n[(u + Math.floor(f * g)) % n.length], this._displayViolations = Math.round(f * v), this._displayPasses = Math.round(f * h), this._displayIncomplete = Math.round(f * m), this._displayRules = Math.round(f * x), $ < 1 ? requestAnimationFrame(b) : (this._displayScore = e, this._displayGrade = t, this._displayColor = r, this._displayViolations = v, this._displayPasses = h, this._displayIncomplete = m, this._displayRules = x);
+  _animateScore(e, s) {
+    var y, k, $;
+    const i = performance.now(), r = E(s), o = ["A", "B", "C", "D", "F"], u = Math.max(0, o.indexOf(s)), n = 25, h = ((u - n) % o.length + o.length) % o.length, v = ((y = this._result) == null ? void 0 : y.summary.totalViolations) ?? 0, _ = ((k = this._result) == null ? void 0 : k.summary.passes) ?? 0, g = (($ = this._result) == null ? void 0 : $.summary.incompleteCount) ?? 0, m = this._uniqueRulesCount(), w = (A) => {
+      const I = A - i, z = Math.min(I / 1800, 1), f = 1 - Math.pow(1 - z, 3);
+      this._displayScore = Math.round(f * e), this._displayGrade = o[(h + Math.floor(f * n)) % o.length], this._displayViolations = Math.round(f * v), this._displayPasses = Math.round(f * _), this._displayIncomplete = Math.round(f * g), this._displayRules = Math.round(f * m), z < 1 ? requestAnimationFrame(w) : (this._displayScore = e, this._displayGrade = s, this._displayColor = r, this._displayViolations = v, this._displayPasses = _, this._displayIncomplete = g, this._displayRules = m);
     };
-    requestAnimationFrame(b);
+    requestAnimationFrame(w);
+  }
+  async _fetchHistory() {
+    if (this._unique)
+      try {
+        const e = this._tokenProvider ? await this._tokenProvider() : void 0, s = await fetch(`${b}/audit/history/${this._unique}`, {
+          headers: {
+            Accept: "application/json",
+            ...e ? { Authorization: `Bearer ${e}` } : {}
+          }
+        });
+        s.ok ? (this._history = await s.json(), !this._result && this._history.length > 0 && (this._historyExpanded = !0), sessionStorage.getItem("uaccessible:autoload") === this._unique && this._history.length > 0 && (sessionStorage.removeItem("uaccessible:autoload"), this._loadHistoryEntry(0, this._history[0].scannedAt))) : s.status;
+      } catch {
+      }
+  }
+  async _loadHistoryEntry(e, s) {
+    var a;
+    if (this._unique) {
+      this._historyLoading = e;
+      try {
+        const i = this._tokenProvider ? await this._tokenProvider() : void 0, r = await fetch(`${b}/audit/history/${this._unique}/${e}`, {
+          headers: {
+            Accept: "application/json",
+            ...i ? { Authorization: `Bearer ${i}` } : {}
+          }
+        });
+        if (!r.ok) throw new Error(`Failed to load scan (HTTP ${r.status})`);
+        const o = await r.json();
+        this._result = o, this._historicalDate = s, this._historicalIndex = e, this._historyExpanded = !1, this._activeImpact = null, this._collapsed = /* @__PURE__ */ new Set(), this._collapsedIncomplete = /* @__PURE__ */ new Set(), this._collapsedPasses = /* @__PURE__ */ new Set(), this._violationsExpanded = !0, this._reviewExpanded = !0, this._passesExpanded = !1, o && !o.fetchError && (this._displayScore = o.score, this._displayGrade = o.grade, this._displayColor = E(o.grade), this._displayViolations = o.summary.totalViolations, this._displayPasses = o.summary.passes, this._displayIncomplete = o.summary.incompleteCount, this._displayRules = new Set(o.violations.map((u) => u.id)).size);
+      } catch (i) {
+        const r = i instanceof Error ? i.message : "Could not load historical scan.";
+        (a = this._notificationContext) == null || a.peek("danger", {
+          data: { headline: "History load failed", message: r }
+        });
+      } finally {
+        this._historyLoading = null;
+      }
+    }
+  }
+  async _deleteHistoryEntry(e) {
+    if (this._unique)
+      try {
+        const s = this._tokenProvider ? await this._tokenProvider() : void 0;
+        await fetch(`${b}/audit/history/${this._unique}/${e}`, {
+          method: "DELETE",
+          headers: s ? { Authorization: `Bearer ${s}` } : {}
+        }), await this._fetchHistory();
+      } catch {
+      }
+  }
+  async _clearHistory() {
+    if (this._unique)
+      try {
+        const e = this._tokenProvider ? await this._tokenProvider() : void 0;
+        await fetch(`${b}/audit/history/${this._unique}`, {
+          method: "DELETE",
+          headers: e ? { Authorization: `Bearer ${e}` } : {}
+        }), this._history = [];
+      } catch {
+      }
+  }
+  /** Returns score/violation delta vs the previous scan. Only shown for live (non-historical) results. */
+  _delta() {
+    if (!this._result || this._historicalDate) return null;
+    const e = this._history[1];
+    return e ? {
+      score: (this._result.score ?? 0) - e.score,
+      violations: (this._result.summary.totalViolations ?? 0) - e.violationCount
+    } : null;
+  }
+  _exportCsv() {
+    var u;
+    if (!this._result) return;
+    const e = [
+      ["Rule ID", "Impact", "WCAG Level", "Rule Name", "Description", "Elements Affected", "First Selector"]
+    ];
+    for (const n of this._result.violations)
+      e.push([
+        n.id,
+        n.impact ?? "",
+        n.wcagLevel ?? "",
+        `"${n.help.replace(/"/g, '""')}"`,
+        `"${n.description.replace(/"/g, '""')}"`,
+        String(n.nodes.length),
+        `"${(((u = n.nodes[0]) == null ? void 0 : u.target) ?? "").replace(/"/g, '""')}"`
+      ]);
+    const s = e.map((n) => n.join(",")).join(`
+`), a = new Blob([s], { type: "text/csv;charset=utf-8;" }), i = URL.createObjectURL(a), r = document.createElement("a");
+    r.href = i;
+    const o = (/* @__PURE__ */ new Date()).toISOString().slice(0, 16).replace("T", "_").replace(":", "-");
+    r.download = `uAccessible-violations-${o}.csv`, r.click(), URL.revokeObjectURL(i);
+  }
+  async _exportHistoryEntryCsv(e) {
+    var s;
+    if (this._unique)
+      try {
+        const a = this._tokenProvider ? await this._tokenProvider() : void 0, i = await fetch(`${b}/audit/history/${this._unique}/${e}`, {
+          headers: { Accept: "application/json", ...a ? { Authorization: `Bearer ${a}` } : {} }
+        });
+        if (!i.ok) return;
+        const r = await i.json(), o = [
+          ["Rule ID", "Impact", "WCAG Level", "Rule Name", "Description", "Elements Affected", "First Selector"]
+        ];
+        for (const g of r.violations)
+          o.push([
+            g.id,
+            g.impact ?? "",
+            g.wcagLevel ?? "",
+            `"${g.help.replace(/"/g, '""')}"`,
+            `"${g.description.replace(/"/g, '""')}"`,
+            String(g.nodes.length),
+            `"${(((s = g.nodes[0]) == null ? void 0 : s.target) ?? "").replace(/"/g, '""')}"`
+          ]);
+        const u = o.map((g) => g.join(",")).join(`
+`), n = new Blob([u], { type: "text/csv;charset=utf-8;" }), h = URL.createObjectURL(n), v = document.createElement("a");
+        v.href = h;
+        const _ = (/* @__PURE__ */ new Date()).toISOString().slice(0, 16).replace("T", "_").replace(":", "-");
+        v.download = `uAccessible-violations-${_}.csv`, v.click(), URL.revokeObjectURL(h);
+      } catch {
+      }
   }
   // -----------------------------------------------------------------------
   // Render
   // -----------------------------------------------------------------------
   render() {
-    var t, a;
+    var s, a, i, r;
     if (this._loading)
-      return s`<div class="loader"><uui-loader></uui-loader></div>`;
-    const e = ((t = this._result) == null ? void 0 : t.published) && !this._result.fetchError;
-    return s`
+      return t`
+                <div class="loader-alert-wrap">
+                    <uui-alert>
+                        <p>Running axe-core accessibility audit against the published version of this page — this may take a moment.</p>
+                        <div class="scan-progress-track" style="margin-top: 8px;"><div class="scan-progress-fill"></div></div>
+                    </uui-alert>
+                </div>`;
+    const e = ((s = this._result) == null ? void 0 : s.published) && !this._result.fetchError;
+    return t`
             <div class="page-header">
                 <div class="page-header-main">
-                    <img
-                        class="page-logo"
-                        src="/App_Plugins/UmbracoCommunityuAccessible/images/uAccessible_logo.png"
-                        alt="uAccessible"
-                    />
                     <div>
                         <h3 class="page-title">
-                            <strong>uAccessible:</strong> Accessibility Auditor
+                            uAccessible: Accessibility Auditor
                         </h3>
                         <p class="page-description">
                             Scans the last published version of this page using
@@ -259,12 +407,28 @@ let c = class extends T(A) {
                     </div>
                 </div>
                 <div class="header-actions">
-                    ${e && ((a = this._result) != null && a.url) ? s`
+                    ${e && (((i = (a = this._result) == null ? void 0 : a.violations) == null ? void 0 : i.length) ?? 0) > 0 ? t`
+                        <uui-button look="outline" compact @click=${this._exportCsv} title="Export violations as CSV">
+                            <span class="btn-content">
+                                <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                    stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                    <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                                    <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
+                                    <path d="M8 11h8" />
+                                    <path d="M8 15h5" />
+                                </svg>
+                                Export CSV
+                            </span>
+                        </uui-button>
+                    ` : l}
+                    ${e && ((r = this._result) != null && r.url) ? t`
                         <uui-button look="outline"
                             href=${this._result.url}
                             target="_blank"
                             title="Open the published page in a new tab">
-                            <span class="btn-content">View page ${_}</span>
+                            <span class="btn-content">View page ${x}</span>
                         </uui-button>
                     ` : l}
                     <uui-button
@@ -274,38 +438,156 @@ let c = class extends T(A) {
                         ?disabled=${this._loading}
                         title=${this._result ? "Re-run accessibility audit" : "Run accessibility audit"}>
                         <span class="btn-content">
-                            ${this._result ? s`Re-run Audit ${U}` : "Run Audit"}
+                            ${this._result ? t`Re-run Audit ${U}` : "Run Audit"}
                         </span>
                     </uui-button>
                 </div>
             </div>
 
+            ${this._scanInProgress ? t`
+                <uui-alert color="warning" headline="Scan already in progress" style="margin-top: var(--uui-size-space-4);">
+                    Another editor is already scanning this page. The result will appear in <strong>Scan history</strong> shortly — no need to scan again.
+                </uui-alert>
+            ` : l}
+
+            ${this._historyLoading !== null ? t`
+                <div class="history-load-bar">
+                    <uui-loader-circle></uui-loader-circle>
+                    <span>Loading historical scan…</span>
+                </div>
+            ` : l}
+
             ${this._renderBody()}
         `;
   }
+  _renderHistory() {
+    return this._history.length === 0 ? l : t`
+            <div class="history-section">
+                <h4 class="section-heading section-heading--history">
+                    <svg class="section-heading__icon" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                        stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M12 8l0 4l2 2" />
+                        <path d="M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5" />
+                    </svg>
+                    Scan history
+                    <span class="section-heading-count">
+                        (<strong>${this._history.length}</strong>
+                        scan${this._history.length !== 1 ? "s" : ""})
+                    </span>
+                    <uui-button look="outline" compact
+                        @click=${() => {
+      this._historyExpanded = !this._historyExpanded;
+    }}>
+                        <span class="btn-content">
+                            ${this._historyExpanded ? "Collapse" : "Show"}
+                            <svg class="btn-icon chevron-icon ${this._historyExpanded ? "chevron-icon--up" : ""}"
+                                xmlns="http://www.w3.org/2000/svg" fill="none"
+                                stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <path d="M6 9l6 6l6 -6" />
+                            </svg>
+                        </span>
+                    </uui-button>
+                </h4>
+                ${this._historyExpanded ? t`
+                    <div class="exec-card history-table-card">
+                        <table class="history-table">
+                            <thead>
+                                <tr>
+                                    <th>Date of scan</th>
+                                    <th>Grade</th>
+                                    <th>Score</th>
+                                    <th class="th--violations">Violations</th>
+                                    <th class="th--critical">Critical</th>
+                                    <th class="th--serious">Serious</th>
+                                    <th class="th--moderate">Moderate</th>
+                                    <th class="th--minor">Minor</th>
+                                    <th class="th--passes">Passes</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${this._history.map((e) => t`
+                                    <tr class="${e.index === 0 ? "history-row--latest" : ""} ${this._historicalIndex === e.index ? "history-row--active" : ""}">
+                                        <td>${new Date(e.scannedAt).toLocaleString()}</td>
+                                        <td><span class="grade-circle" style="color: ${V(e.grade)};">${e.grade}</span></td>
+                                        <td>${e.score}/100</td>
+                                        <td><span class="count-badge count-badge--violations">${e.violationCount}</span></td>
+                                        <td><span class="count-badge count-badge--critical">${e.criticalCount}</span></td>
+                                        <td><span class="count-badge count-badge--serious">${e.seriousCount}</span></td>
+                                        <td><span class="count-badge count-badge--moderate">${e.moderateCount ?? 0}</span></td>
+                                        <td><span class="count-badge count-badge--minor">${e.minorCount ?? 0}</span></td>
+                                        <td><span class="count-badge count-badge--passes">${e.passingCount ?? 0}</span></td>
+                                        <td class="history-actions">
+                                            <uui-button look="${this._historicalIndex === e.index ? "primary" : "outline"}" compact
+                                                class="history-load-btn"
+                                                ?disabled=${this._historyLoading === e.index}
+                                                @click=${() => this._loadHistoryEntry(e.index, e.scannedAt)}>
+                                                ${this._historyLoading === e.index ? t`<uui-loader-circle></uui-loader-circle>` : this._historicalIndex === e.index ? "Loaded" : "Load"}
+                                            </uui-button>
+                                            <uui-button look="outline" compact
+                                                @click=${() => this._exportHistoryEntryCsv(e.index)}
+                                                title="Export this scan's violations as CSV">
+                                                    <span class="btn-content">
+                                                        <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+                                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                            <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                                                            <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
+                                                            <path d="M8 11h8" /><path d="M8 15h5" />
+                                                        </svg>
+                                                        Export CSV
+                                                    </span>
+                                                </uui-button>
+                                            <uui-button look="primary" compact color="danger"
+                                                @click=${() => this._deleteHistoryEntry(e.index)}
+                                                title="Delete this scan entry">
+                                                Delete
+                                            </uui-button>
+                                        </td>
+                                    </tr>
+                                `)}
+                            </tbody>
+                        </table>
+                        <div class="history-footer">
+                            <uui-button look="primary" compact color="danger" @click=${this._clearHistory}>
+                                Clear all history
+                            </uui-button>
+                        </div>
+                    </div>
+                ` : l}
+            </div>
+        `;
+  }
   _renderBody() {
-    var n;
+    var u;
     if (this._error)
-      return s`<uui-alert color="danger">${this._error}</uui-alert>`;
+      return t`<uui-alert color="danger">${this._error}</uui-alert>`;
     if (!this._result)
-      return s`
+      return t`
+                ${this._renderHistory()}
                 <uui-alert>
-                    <p class="state-msg">Click <strong>Run Audit</strong> to check this page for accessibility issues against its last published version.</p>
+                    <p class="state-msg">
+                        Click <strong>Run Audit</strong> to check this page for accessibility issues against its last published version.
+                        ${this._history.length > 0 ? t` Or <strong>load a past scan</strong> from history above.` : l}
+                    </p>
                     <p class="state-hint">Powered by axe-core &mdash; checks WCAG 2.0, 2.1 &amp; 2.2 (Levels A &amp; AA)</p>
                 </uui-alert>
             `;
     if (!this._result.published)
-      return s`
+      return t`
                 <uui-alert headline="Page not published">
                     <p class="state-msg">This page hasn't been published yet — there is no public URL to audit.</p>
                     <p class="state-hint">Publish the page from the <strong>Info</strong> tab, then click <strong>Run Audit</strong> above.</p>
                 </uui-alert>
             `;
     if (this._result.fetchError)
-      return s`
+      return t`
                 <uui-alert color="warning" headline="Could not load page">
                     <p class="state-msg">${this._result.fetchError}</p>
-                    ${this._result.url ? s`
+                    ${this._result.url ? t`
                         <div class="fetch-url-box">
                             <span class="fetch-url-label">URL attempted</span>
                             <code class="fetch-url-code">${this._result.url}</code>
@@ -313,41 +595,83 @@ let c = class extends T(A) {
                     ` : l}
                 </uui-alert>
             `;
-    const { violations: e, incomplete: t } = this._result, a = this._filteredViolations(), i = this._quickWins(), r = this._audiences();
-    return s`
+    const { violations: e, incomplete: s } = this._result, a = this._filteredViolations(), i = this._quickWins(), r = this._audiences(), o = this._delta();
+    return t`
+            <!-- ── Historical scan context card ── -->
+            ${this._historicalDate ? t`
+                <div class="exec-card historical-card">
+                    <div class="historical-card__header">
+                        <svg class="historical-card__icon" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                            stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <path d="M12 8l0 4l2 2" />
+                            <path d="M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5" />
+                        </svg>
+                        <div class="historical-card__content">
+                            <span class="historical-card__label">Historical scan</span>
+                            <span class="historical-card__date">${new Date(this._historicalDate).toLocaleString()}</span>
+                            ${this._historicalIndex !== null ? t`
+                                <span class="historical-card__meta">Entry ${this._historicalIndex + 1} of ${this._history.length} — not the latest result</span>
+                            ` : l}
+                        </div>
+                        <uui-button look="primary" color="positive" compact @click=${this._runAudit}>
+                            Run fresh audit
+                        </uui-button>
+                    </div>
+                </div>
+            ` : l}
+
+            <!-- ── Scan history ── -->
+            ${this._renderHistory()}
+
             <!-- ── Grade ring + stat cards row ── -->
             <div class="top-row">
                 <!-- Grade ring -->
-                <div class="grade-ring" style="--ring-color: ${this._displayColor.ring}; --text-color: ${this._displayColor.color}">
-                    <span class="grade-ring__letter">${this._displayGrade}</span>
-                    <span class="grade-ring__score">${this._displayScore}/100</span>
+                <div class="grade-ring-wrap">
+                    <div class="grade-ring" style="--ring-color: ${this._displayColor.ring}; --text-color: ${this._displayColor.color}">
+                        <span class="grade-ring__letter">${this._displayGrade}</span>
+                        <span class="grade-ring__score">${this._displayScore}/100</span>
+                    </div>
+                    ${o && o.score !== 0 ? t`
+                        <span class="grade-delta ${o.score > 0 ? "grade-delta--up" : "grade-delta--down"}">
+                            ${o.score > 0 ? "▲" : "▼"} ${Math.abs(o.score)} pts
+                        </span>
+                    ` : l}
                 </div>
 
                 <!-- Stat cards -->
                 <div class="stats-row">
                     <div class="stat-card stat-card--violations">
-                        <div class="stat-card__icon">${D}</div>
+                        <div class="stat-card__icon">${F}</div>
                         <div class="stat-card__info">
-                            <span class="stat-card__value">${this._displayViolations}</span>
+                            <div class="stat-card__value-row">
+                                <span class="stat-card__value">${this._displayViolations}</span>
+                                ${o && o.violations !== 0 ? t`
+                                    <span class="delta-badge ${o.violations > 0 ? "delta-badge--down" : "delta-badge--up"}">
+                                        ${o.violations > 0 ? "▲" : "▼"}${Math.abs(o.violations)}
+                                    </span>
+                                ` : l}
+                            </div>
                             <span class="stat-card__label">Violations</span>
                         </div>
                     </div>
                     <div class="stat-card stat-card--passes">
-                        <div class="stat-card__icon">${F}</div>
+                        <div class="stat-card__icon">${W}</div>
                         <div class="stat-card__info">
                             <span class="stat-card__value">${this._displayPasses}</span>
                             <span class="stat-card__label">Passing</span>
                         </div>
                     </div>
                     <div class="stat-card stat-card--review">
-                        <div class="stat-card__icon">${W}</div>
+                        <div class="stat-card__icon">${N}</div>
                         <div class="stat-card__info">
                             <span class="stat-card__value">${this._displayIncomplete}</span>
                             <span class="stat-card__label">Needs Review</span>
                         </div>
                     </div>
                     <div class="stat-card stat-card--rules">
-                        <div class="stat-card__icon">${N}</div>
+                        <div class="stat-card__icon">${X}</div>
                         <div class="stat-card__info">
                             <span class="stat-card__value">${this._displayRules}</span>
                             <span class="stat-card__label">Unique Rules</span>
@@ -359,22 +683,22 @@ let c = class extends T(A) {
             <!-- ── Filter + collapse all row ── -->
             <div class="filter-row">
                 <div class="summary-filters">
-                    ${V.map((o) => {
-      const g = e.filter((h) => h.impact === o).length, u = this._activeImpact === o, v = this._activeImpact !== null && !u;
-      return s`
+                    ${O.map((n) => {
+      const h = e.filter((g) => g.impact === n).length, v = this._activeImpact === n, _ = this._activeImpact !== null && !v;
+      return t`
                             <button
-                                class="impact-pill impact-pill--${o} ${v ? "impact-pill--dimmed" : ""} ${u ? "impact-pill--active" : ""}"
-                                style="--pill-color: ${z[o]}; --pill-bg: ${C[o]}"
+                                class="impact-pill impact-pill--${n} ${_ ? "impact-pill--dimmed" : ""} ${v ? "impact-pill--active" : ""}"
+                                style="--pill-color: ${C[n]}; --pill-bg: ${S[n]}"
                                 @click=${() => {
-        this._activeImpact = u ? null : o;
+        this._activeImpact = v ? null : n;
       }}
-                                title="Filter by ${o} violations">
-                                ${o.charAt(0).toUpperCase() + o.slice(1)}: ${g}
+                                title="Filter by ${n} violations">
+                                ${n.charAt(0).toUpperCase() + n.slice(1)}: ${h}
                             </button>
                         `;
     })}
                 </div>
-                ${e.length > 0 || t.length > 0 ? s`
+                ${e.length > 0 || s.length > 0 ? t`
                     <uui-button look="primary" compact @click=${this._toggleAll}>
                         <span class="btn-content">
                             ${this._allCollapsed ? "Expand all" : "Collapse all"}
@@ -390,7 +714,7 @@ let c = class extends T(A) {
                 ` : l}
             </div>
 
-            ${this._activeImpact ? s`
+            ${this._activeImpact ? t`
                 <p class="filter-hint">
                     Showing <strong>${this._activeImpact}</strong> violations only &mdash;
                     click the pill again to clear.
@@ -398,37 +722,37 @@ let c = class extends T(A) {
             ` : l}
 
             <!-- ── Who is affected + Quick wins ── -->
-            ${(i.length > 0 || r.length > 0) && !this._activeImpact ? s`
+            ${(i.length > 0 || r.length > 0) && !this._activeImpact ? t`
                 <div class="exec-row">
-                    ${r.length > 0 ? s`
+                    ${r.length > 0 ? t`
                         <div class="exec-card">
                             <h4 class="exec-card__heading">
-                                ${Y} Who is affected
+                                ${J} Who is affected
                             </h4>
                             <p class="exec-card__subtitle">Accessibility groups impacted by violations on this page</p>
                             <div class="audience-chips">
-                                ${r.map((o) => s`
-                                    <span class="audience-chip">${o}</span>
+                                ${r.map((n) => t`
+                                    <span class="audience-chip">${n}</span>
                                 `)}
                             </div>
                         </div>
                     ` : l}
 
-                    ${i.length > 0 ? s`
+                    ${i.length > 0 ? t`
                         <div class="exec-card">
                             <h4 class="exec-card__heading">
-                                ${X} Quick wins
+                                ${K} Quick wins
                             </h4>
                             <p class="exec-card__subtitle">Lowest effort fixes — address these first</p>
                             <ul class="quick-wins-list">
-                                ${i.map((o) => s`
+                                ${i.map((n) => t`
                                     <li class="quick-win">
-                                        <span class="effort-badge effort-badge--${S(o.impact).toLowerCase()}">
-                                            ${S(o.impact).toUpperCase()}
+                                        <span class="effort-badge effort-badge--${M(n.impact).toLowerCase()}">
+                                            ${M(n.impact).toUpperCase()}
                                         </span>
                                         <span class="quick-win__text">
-                                            <span class="quick-win__title">${o.help}</span>
-                                            <span class="quick-win__nodes">${o.nodes.length} element${o.nodes.length !== 1 ? "s" : ""}</span>
+                                            <span class="quick-win__title">${n.help}</span>
+                                            <span class="quick-win__nodes">${n.nodes.length} element${n.nodes.length !== 1 ? "s" : ""}</span>
                                         </span>
                                     </li>
                                 `)}
@@ -469,22 +793,22 @@ let c = class extends T(A) {
                 </uui-button>
             </h4>
 
-            ${this._violationsExpanded ? s`
-                ${e.length === 0 ? s`
+            ${this._violationsExpanded ? t`
+                ${e.length === 0 ? t`
                     <uui-alert color="positive" headline="No violations found">
                         <p class="state-msg">This page passed all automated accessibility checks.</p>
                     </uui-alert>
-                ` : a.length === 0 ? s`
+                ` : a.length === 0 ? t`
                     <uui-alert>No ${this._activeImpact} violations on this page.</uui-alert>
-                ` : s`
+                ` : t`
                     <div class="violations-list">
-                        ${a.map((o) => this._renderViolation(o, "violations"))}
+                        ${a.map((n) => this._renderViolation(n, "violations"))}
                     </div>
                 `}
             ` : l}
 
             <!-- ── Incomplete / needs review ── -->
-            ${t.length > 0 ? s`
+            ${s.length > 0 ? t`
                 <h4 class="section-heading section-heading--review" style="margin-top: var(--uui-size-layout-1)">
                     <svg class="section-heading__icon" xmlns="http://www.w3.org/2000/svg" fill="none"
                         stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
@@ -496,8 +820,8 @@ let c = class extends T(A) {
                     </svg>
                     Needs manual review
                     <span class="section-heading-count">
-                        (<strong>${t.length}</strong>
-                        item${t.length !== 1 ? "s" : ""} require manual verification)
+                        (<strong>${s.length}</strong>
+                        item${s.length !== 1 ? "s" : ""} require manual verification)
                     </span>
                     <uui-button look="primary" compact @click=${() => {
       this._reviewExpanded = !this._reviewExpanded;
@@ -517,15 +841,15 @@ let c = class extends T(A) {
                 <uui-alert color="warning" headline="Automated tools cannot fully determine these">
                     <p class="state-msg">These checks require a human to verify. axe-core detected a potential issue but cannot confirm whether it is a true violation.</p>
                 </uui-alert>
-                ${this._reviewExpanded ? s`
+                ${this._reviewExpanded ? t`
                     <div class="violations-list" style="margin-top: var(--uui-size-space-3)">
-                        ${t.map((o) => this._renderViolation(o, "incomplete"))}
+                        ${s.map((n) => this._renderViolation(n, "incomplete"))}
                     </div>
                 ` : l}
             ` : l}
 
             <!-- ── Passing checks ── -->
-            ${((n = this._result.passingChecks) == null ? void 0 : n.length) > 0 ? s`
+            ${((u = this._result.passingChecks) == null ? void 0 : u.length) > 0 ? t`
                 <h4 class="section-heading section-heading--passes" style="margin-top: var(--uui-size-layout-1)">
                     <svg class="section-heading__icon" xmlns="http://www.w3.org/2000/svg" fill="none"
                         stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
@@ -557,26 +881,27 @@ let c = class extends T(A) {
                 <uui-alert color="positive" headline="These checks passed">
                     <p class="state-msg">Axe-core confirmed these rules are satisfied on this page. Each card below shows the element that was tested and the criteria it met. Passing these checks does not guarantee full WCAG conformance — manual testing is still recommended.</p>
                 </uui-alert>
-                ${this._passesExpanded ? s`
+                ${this._passesExpanded ? t`
                     <div class="violations-list" style="margin-top: var(--uui-size-space-3)">
-                        ${this._result.passingChecks.map((o) => this._renderPassingCheck(o))}
+                        ${this._result.passingChecks.map((n) => this._renderPassingCheck(n))}
                     </div>
                 ` : l}
             ` : l}
         `;
   }
-  _renderViolation(e, t) {
-    const i = (t === "violations" ? this._collapsed : this._collapsedIncomplete).has(e.id), r = this._wcagTags(e.tags), n = e.impact ?? "minor", o = z[n] ?? "#6b7280", g = C[n] ?? "rgba(0,0,0,0.06)";
-    return s`
-            <uui-box class="block-box block-box--${n}${i ? " block-box--collapsed" : ""}">
+  _renderViolation(e, s) {
+    const i = (s === "violations" ? this._collapsed : this._collapsedIncomplete).has(e.id), r = this._wcagTags(e.tags), o = e.impact ?? "minor", u = C[o] ?? "#6b7280", n = S[o] ?? "rgba(0,0,0,0.06)";
+    return t`
+            <uui-box class="block-box block-box--${o}${i ? " block-box--collapsed" : ""}">
                 <div slot="headline" class="block-headline">
-                    <span class="impact-badge" style="--badge-color: ${o}; --badge-bg: ${g}">
-                        ${n.charAt(0).toUpperCase() + n.slice(1)}
+                    <span class="impact-badge" style="--badge-color: ${u}; --badge-bg: ${n}">
+                        ${o.charAt(0).toUpperCase() + o.slice(1)}
                     </span>
                     <span class="block-headline__text">${e.help}</span>
-                    ${r.length > 0 ? s`
+                    ${e.wcagLevel || r.length > 0 ? t`
                         <div class="block-headline__tags">
-                            ${r.map((u) => s`<span class="tag">${u}</span>`)}
+                            ${e.wcagLevel ? t`<span class="wcag-badge wcag-badge--${e.wcagLevel.toLowerCase().replace(" ", "-")}">${this._wcagLevelLabel(e.wcagLevel)}</span>` : l}
+                            ${r.map((h) => t`<span class="tag">${h}</span>`)}
                         </div>
                     ` : l}
                 </div>
@@ -586,7 +911,7 @@ let c = class extends T(A) {
                     look="outline"
                     compact
                     @click=${() => {
-      t === "violations" ? this._collapsed = this._toggleItem(e.id, this._collapsed) : this._collapsedIncomplete = this._toggleItem(e.id, this._collapsedIncomplete);
+      s === "violations" ? this._collapsed = this._toggleItem(e.id, this._collapsed) : this._collapsedIncomplete = this._toggleItem(e.id, this._collapsedIncomplete);
     }}>
                     <span class="btn-content">
                         ${i ? "Expand" : "Collapse"}
@@ -600,7 +925,7 @@ let c = class extends T(A) {
                     </span>
                 </uui-button>
 
-                ${i ? l : s`
+                ${i ? l : t`
                     <div class="violation-body">
                         <div class="violation-desc-row">
                             <code class="rule-id">${e.id}</code>
@@ -611,7 +936,7 @@ let c = class extends T(A) {
                                 href="${e.helpUrl}"
                                 target="_blank"
                                 rel="noopener noreferrer">
-                                <span class="btn-content">Learn more ${_}</span>
+                                <span class="btn-content">Learn more ${x}</span>
                             </uui-button>
                         </div>
 
@@ -619,31 +944,31 @@ let c = class extends T(A) {
                             <span>${e.nodes.length} affected element${e.nodes.length === 1 ? "" : "s"}</span>
                         </h5>
                         <div class="nodes-list">
-                            ${e.nodes.map((u, v) => s`
+                            ${e.nodes.map((h, v) => t`
                                 <div class="node">
                                     <div class="node__header">
-                                        <span class="node__index" style="background: ${o}; color: #fff;">${v + 1}</span>
-                                        ${u.failureSummary ? s`<span class="node__reasons-label">WHY THIS FAILS</span>` : l}
+                                        <span class="node__index" style="background: ${u}; color: #fff;">${v + 1}</span>
+                                        ${h.failureSummary ? t`<span class="node__reasons-label">WHY THIS FAILS</span>` : l}
                                     </div>
                                     <div class="node__content">
-                                        ${u.failureSummary ? s`
+                                        ${h.failureSummary ? t`
                                             <ul class="node__reasons-list">
-                                                ${u.failureSummary.split("; ").filter((h) => h.length > 0).map((h) => s`<li class="node__reasons-item" style="color: ${o};">${K}<span>${h}</span></li>`)}
+                                                ${h.failureSummary.split("; ").filter((_) => _.length > 0).map((_) => t`<li class="node__reasons-item" style="color: ${u};">${Q}<span>${_}</span></li>`)}
                                             </ul>
                                         ` : l}
                                         <span class="node__html-label">IMPACTED CODE</span>
-                                        <pre class="node__html"><code>${u.html}</code></pre>
-                                        ${this._isSpecificSelector(u.target) ? s`
+                                        <pre class="node__html"><code>${h.html}</code></pre>
+                                        ${this._isSpecificSelector(h.target) ? t`
                                             <div class="node__selector">
                                                 <span class="node__selector-label">CSS SELECTOR</span>
                                                 <p class="node__selector-hint">Copy and paste into browser DevTools (Inspect &rarr; Ctrl+F or Find by selector) to quickly locate this element on the front end.</p>
                                                 <div class="node__selector-body">
-                                                    <pre class="node__selector-code"><code>${u.target}</code></pre>
+                                                    <pre class="node__selector-code"><code>${h.target}</code></pre>
                                                     <uui-button
                                                         compact
                                                         look="outline"
                                                         title="Copy selector"
-                                                        @click=${() => navigator.clipboard.writeText(u.target)}>
+                                                        @click=${() => navigator.clipboard.writeText(h.target)}>
                                                         Copy
                                                     </uui-button>
                                                 </div>
@@ -659,15 +984,15 @@ let c = class extends T(A) {
         `;
   }
   _renderPassingCheck(e) {
-    const t = this._collapsedPasses.has(e.id), a = this._wcagTags(e.tags);
-    return s`
-            <uui-box class="block-box block-box--passes${t ? " block-box--collapsed" : ""}">
+    const s = this._collapsedPasses.has(e.id), a = this._wcagTags(e.tags);
+    return t`
+            <uui-box class="block-box block-box--passes${s ? " block-box--collapsed" : ""}">
                 <div slot="headline" class="block-headline">
                     <span class="pass-header-label">PASSED</span>
                     <span class="block-headline__text">${e.help}</span>
-                    ${a.length > 0 ? s`
+                    ${a.length > 0 ? t`
                         <div class="block-headline__tags">
-                            ${a.map((i) => s`<span class="tag">${i}</span>`)}
+                            ${a.map((i) => t`<span class="tag">${i}</span>`)}
                         </div>
                     ` : l}
                 </div>
@@ -680,8 +1005,8 @@ let c = class extends T(A) {
       this._collapsedPasses = this._toggleItem(e.id, this._collapsedPasses);
     }}>
                     <span class="btn-content">
-                        ${t ? "Expand" : "Collapse"}
-                        <svg class="btn-icon chevron-icon ${t ? "chevron-icon--up" : ""}"
+                        ${s ? "Expand" : "Collapse"}
+                        <svg class="btn-icon chevron-icon ${s ? "chevron-icon--up" : ""}"
                             xmlns="http://www.w3.org/2000/svg" fill="none"
                             stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                             stroke-width="2" viewBox="0 0 24 24">
@@ -691,7 +1016,7 @@ let c = class extends T(A) {
                     </span>
                 </uui-button>
 
-                ${t ? l : s`
+                ${s ? l : t`
                     <div class="violation-body">
                         <div class="violation-desc-row">
                             <code class="rule-id">${e.id}</code>
@@ -702,29 +1027,29 @@ let c = class extends T(A) {
                                 href="${e.helpUrl}"
                                 target="_blank"
                                 rel="noopener noreferrer">
-                                <span class="btn-content">Learn more ${_}</span>
+                                <span class="btn-content">Learn more ${x}</span>
                             </uui-button>
                         </div>
-                        ${e.nodes.length > 0 ? s`
+                        ${e.nodes.length > 0 ? t`
                             <h5 class="nodes-heading">
                                 <span>${e.nodes.length} element${e.nodes.length === 1 ? "" : "s"} checked</span>
                             </h5>
                             <div class="nodes-list">
-                                ${e.nodes.map((i, r) => s`
+                                ${e.nodes.map((i, r) => t`
                                     <div class="node">
                                         <div class="node__header">
                                             <span class="node__index" style="background: #27ae60; color: #fff;">${r + 1}</span>
                                             <span class="node__reasons-label">WHY THIS PASSES</span>
                                         </div>
                                         <div class="node__content">
-                                            ${i.failureSummary ? s`
+                                            ${i.failureSummary ? t`
                                                 <ul class="node__reasons-list">
-                                                    ${i.failureSummary.split("; ").filter((n) => n.length > 0).map((n) => s`<li class="node__reasons-item node__reasons-item--pass">${Q}<span>${n}</span></li>`)}
+                                                    ${i.failureSummary.split("; ").filter((o) => o.length > 0).map((o) => t`<li class="node__reasons-item node__reasons-item--pass">${Y}<span>${o}</span></li>`)}
                                                 </ul>
                                             ` : l}
                                             <span class="node__html-label">PASSING CODE</span>
                                             <pre class="node__html"><code>${i.html}</code></pre>
-                                            ${this._isSpecificSelector(i.target) ? s`
+                                            ${this._isSpecificSelector(i.target) ? t`
                                                 <div class="node__selector">
                                                     <span class="node__selector-label">CSS SELECTOR</span>
                                                     <div class="node__selector-body">
@@ -750,7 +1075,7 @@ let c = class extends T(A) {
         `;
   }
 };
-c.styles = I`
+c.styles = L`
         :host {
             display: block;
             padding: var(--uui-size-layout-1);
@@ -774,12 +1099,6 @@ c.styles = I`
             gap: var(--uui-size-space-5);
         }
 
-        .page-logo {
-            width: 100px;
-            height: 100px;
-            flex-shrink: 0;
-            object-fit: contain;
-        }
 
         .page-title {
             margin: 0 0 var(--uui-size-space-2);
@@ -819,8 +1138,38 @@ c.styles = I`
 
         .loader {
             display: flex;
+            flex-direction: column;
             justify-content: center;
+            align-items: center;
+            gap: var(--uui-size-space-3);
             padding: var(--uui-size-layout-3);
+        }
+        .loader-text {
+            font-size: 13px;
+            color: var(--uui-color-text-alt);
+        }
+        .loader-alert-wrap {
+            padding: var(--uui-size-layout-1);
+        }
+
+        .scan-progress-track {
+            width: 100%;
+            height: 4px;
+            background: var(--uui-color-border);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .scan-progress-fill {
+            height: 100%;
+            width: 40%;
+            background: var(--uui-color-positive, #27ae60);
+            border-radius: 2px;
+            animation: scan-progress-anim 1.8s ease-in-out infinite;
+        }
+        @keyframes scan-progress-anim {
+            0%   { transform: translateX(-100%); width: 40%; }
+            50%  { width: 60%; }
+            100% { transform: translateX(350%); width: 40%; }
         }
 
         /* ── State messages ──────────────────────────────────────── */
@@ -863,6 +1212,43 @@ c.styles = I`
 
         /* ── Top row: grade ring + stat cards ───────────────────── */
 
+        .stat-card__value-row {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+
+        .delta-badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 1px 5px;
+            border-radius: 3px;
+            line-height: 1.3;
+            flex-shrink: 0;
+        }
+
+        .delta-badge--up   { background: rgba(39,174,96,0.14);  color: #1a7a4a; }
+        .delta-badge--down { background: rgba(192,57,43,0.14);  color: #c0392b; }
+
+        .grade-ring-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--uui-size-space-2);
+            flex-shrink: 0;
+        }
+
+        .grade-delta {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 99px;
+            white-space: nowrap;
+        }
+
+        .grade-delta--up   { background: rgba(39,174,96,0.14);  color: #1a7a4a; }
+        .grade-delta--down { background: rgba(192,57,43,0.14);  color: #c0392b; }
+
         .top-row {
             display: flex;
             align-items: stretch;
@@ -874,7 +1260,6 @@ c.styles = I`
         /* Grade ring */
 
         .grade-ring {
-            flex-shrink: 0;
             width: 88px;
             height: 88px;
             border-radius: 50%;
@@ -1506,7 +1891,8 @@ c.styles = I`
 
         .section-heading--violations uui-button,
         .section-heading--review uui-button,
-        .section-heading--passes uui-button {
+        .section-heading--passes uui-button,
+        .section-heading--history uui-button {
             margin-left: auto;
             flex-shrink: 0;
         }
@@ -1554,10 +1940,189 @@ c.styles = I`
             font-size: 12px;
             color: var(--uui-color-text-alt, #6b7280);
         }
+
+        /* ── WCAG level badge — matches .tag pill style ──────────── */
+
+        .wcag-badge {
+            padding: 2px 8px;
+            border-radius: 99px;
+            font-size: 11px;
+            font-weight: 600;
+            flex-shrink: 0;
+            background: color-mix(in srgb, var(--uui-color-interactive, #3544b1) 10%, transparent);
+            color: var(--uui-color-interactive, #1e3a8a);
+            border: 1px solid color-mix(in srgb, var(--uui-color-interactive, #3544b1) 20%, transparent);
+        }
+
+        /* ── History load bar ────────────────────────────────────── */
+
+        .history-load-bar {
+            display: flex;
+            align-items: center;
+            gap: var(--uui-size-space-3);
+            padding: var(--uui-size-space-3) var(--uui-size-space-4);
+            border-radius: var(--uui-border-radius, 3px);
+            background: color-mix(in srgb, var(--uui-color-interactive, #3544b1) 6%, transparent);
+            border: 1px solid color-mix(in srgb, var(--uui-color-interactive, #3544b1) 25%, transparent);
+            font-size: 13px;
+            color: var(--uui-color-text, #1a1a1a);
+        }
+
+        /* ── Historical scan context card ────────────────────────── */
+
+        .historical-card {
+            margin-bottom: var(--uui-size-layout-1);
+        }
+
+        .historical-card__header {
+            display: flex;
+            align-items: center;
+            gap: var(--uui-size-space-4);
+        }
+
+        .historical-card__icon {
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+            color: var(--uui-color-text-alt, #6b7280);
+        }
+
+        .historical-card__content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
+        }
+
+        .historical-card__label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--uui-color-text-alt, #6b7280);
+        }
+
+        .historical-card__date {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--uui-color-text, #1a1a1a);
+        }
+
+        .historical-card__meta {
+            font-size: 12px;
+            color: var(--uui-color-text-alt, #6b7280);
+        }
+
+        /* ── Scan history ────────────────────────────────────────── */
+
+        .history-section {
+            margin-bottom: var(--uui-size-layout-1);
+        }
+
+        .history-row--latest td {
+            font-weight: 600;
+        }
+
+        .history-row--active td {
+            background: color-mix(in srgb, var(--uui-color-interactive, #3544b1) 6%, transparent);
+        }
+
+        .history-load-btn {
+            min-width: 4.5rem;
+        }
+        .history-action-disabled {
+            display: inline-block;
+            opacity: 0.35;
+            pointer-events: none;
+            cursor: not-allowed;
+        }
+
+        .history-actions {
+            display: flex;
+            gap: var(--uui-size-space-2);
+            white-space: nowrap;
+        }
+
+        .history-footer {
+            padding: var(--uui-size-space-3) 0 0;
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .history-table th,
+        .history-table td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--uui-color-border, #d8d7d9);
+        }
+
+        .history-table thead th {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--uui-color-text-alt, #6b7280);
+            background: var(--uui-color-surface, #fff);
+        }
+        .history-table thead th.th--violations { color: #8b1a1a; }
+        .history-table thead th.th--critical   { color: #c0392b; }
+        .history-table thead th.th--serious    { color: #d35400; }
+        .history-table thead th.th--moderate   { color: #b7770d; }
+        .history-table thead th.th--minor      { color: #2471a3; }
+        .history-table thead th.th--passes     { color: #1a7a4a; }
+
+        .history-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .history-table tbody tr:first-child td {
+            font-weight: 600;
+        }
+
+        .history-grade {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: 3px;
+        }
+
+        .history-grade--a { background: rgba(39,174,96,0.15);  color: #1a7a4a; }
+        .history-grade--b { background: rgba(46,204,113,0.15); color: #1a6b2a; }
+        .history-grade--c { background: rgba(243,156,18,0.15); color: #b7770d; }
+        .history-grade--d { background: rgba(230,126,34,0.15); color: #d35400; }
+        .history-grade--f { background: rgba(231,76,60,0.15);  color: #c0392b; }
+
+        .grade-circle {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 28px; height: 28px; border-radius: 50%;
+            border: 2px solid currentColor;
+            background: color-mix(in srgb, currentColor 15%, transparent);
+            font-weight: 800; font-size: 12px; flex-shrink: 0;
+        }
+
+        .count-badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 3px; }
+        .count-badge--violations { background: rgba(139,26,26,0.12);  color: #8b1a1a; }
+        .count-badge--critical   { background: rgba(192,57,43,0.12);  color: #c0392b; }
+        .count-badge--serious    { background: rgba(211,84,0,0.12);   color: #d35400; }
+        .count-badge--moderate   { background: rgba(183,119,13,0.12); color: #b7770d; }
+        .count-badge--minor      { background: rgba(36,113,163,0.12); color: #2471a3; }
+        .count-badge--passes     { background: rgba(39,174,96,0.12);  color: #1a7a4a; }
+        .count-zero { color: var(--uui-color-text-alt, #9ca3af); font-size: 13px; }
     `;
 d([
   p()
 ], c.prototype, "_loading", 2);
+d([
+  p()
+], c.prototype, "_scanInProgress", 2);
 d([
   p()
 ], c.prototype, "_result", 2);
@@ -1590,6 +2155,21 @@ d([
 ], c.prototype, "_passesExpanded", 2);
 d([
   p()
+], c.prototype, "_history", 2);
+d([
+  p()
+], c.prototype, "_historyExpanded", 2);
+d([
+  p()
+], c.prototype, "_historicalDate", 2);
+d([
+  p()
+], c.prototype, "_historyLoading", 2);
+d([
+  p()
+], c.prototype, "_historicalIndex", 2);
+d([
+  p()
 ], c.prototype, "_displayScore", 2);
 d([
   p()
@@ -1610,11 +2190,11 @@ d([
   p()
 ], c.prototype, "_displayRules", 2);
 c = d([
-  P("uaccessible-workspace-view")
+  H("uaccessible-workspace-view")
 ], c);
-const ae = c;
+const ie = c;
 export {
-  ae as default,
+  ie as default,
   c as uAccessibleWorkspaceViewElement
 };
-//# sourceMappingURL=workspace-view.element-C6gj0lCG.js.map
+//# sourceMappingURL=workspace-view.element-B4zzmSwc.js.map

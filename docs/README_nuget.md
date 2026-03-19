@@ -11,15 +11,29 @@ uAccessible adds an **Accessibility** tab to every content node workspace. Click
 
 ![uAccessible workspace tab showing accessibility audit results](https://raw.githubusercontent.com/Jordan-Smith-Dev/uAccessible/main/docs/uAccessible_preview-001.png)
 
+![uAccessible site-wide audit dashboard with page results](https://raw.githubusercontent.com/Jordan-Smith-Dev/uAccessible/main/docs/uAccessible_preview-002.png)
+
+![uAccessible workspace tab showing a historical scan with grade, stat cards, and Quick Wins](https://raw.githubusercontent.com/Jordan-Smith-Dev/uAccessible/main/docs/uAccessible_preview-003.png)
+
+![uAccessible workspace scan history with Load, Export CSV, and Delete actions](https://raw.githubusercontent.com/Jordan-Smith-Dev/uAccessible/main/docs/uAccessible_preview-004.png)
+
 ## Features
 
 - **Accessibility workspace tab** — audit the page you're editing without leaving the content node
-- **A–F accessibility grade** — at-a-glance score based on violation count and severity
+- **A–F accessibility grade** — at-a-glance score (0–100) based on violation count and severity
+- **WCAG level badges** — each violation is tagged A, AA, AAA, or Best Practice at a glance
 - **Violations** — each failing rule shown with impact level (Critical / Serious / Moderate / Minor), WCAG success criteria tags, affected HTML elements with CSS selectors, failure reasons colour-coded by severity, and a direct link to the axe-core remediation guide
 - **Quick wins panel** — surfaces the lowest-effort, highest-impact fixes first
 - **Needs manual review** — items axe-core could not fully determine automatically, requiring human judgement
 - **Passing checks** — collapsible section showing all rules that passed, with the specific criteria each element satisfied and CSS selectors for every checked element
-- **Collapse / expand controls** — collapse all cards at once or toggle individual sections (Violations, Needs manual review, Passing checks) independently
+- **Scan history** — per-page history of the last 10 audits with score, grade, and full violation breakdown (Critical / Serious / Moderate / Minor / Passes); load any historical report in full, export individual history entries as CSV, or delete entries; persisted across restarts
+- **CSV export** — export violations for the current scan or any historical entry to a CSV file
+- **Collapse / expand controls** — collapse all cards at once or toggle individual sections independently
+- **Site-wide audit dashboard** — pick any content node and scan it plus all descendants; summary stat cards, sortable page results table with depth indicators and content-type icons, and CSV export
+- **Site-wide audit history** — history of past site audits with average score, violation totals, and page counts; load any previous full site report or export it as CSV
+- **Navigate to workspace** — jump from any page in a site audit result directly to that page's workspace accessibility tab with the report pre-loaded
+- **Concurrent scan protection** — duplicate scans of the same page or tree are blocked with a clear in-progress warning
+- **Exclusions config** — exclude document types or specific content keys from site-wide scans via `appsettings.json`
 - **WCAG 2.0 / 2.1 / 2.2 coverage** — Levels A and AA, powered by axe-core
 
 ## Requirements
@@ -59,7 +73,16 @@ For a **Release** build, substitute `Debug` with `Release` in the path above. Fo
 
 ### 3. Done
 
-No `appsettings.json` changes or additional configuration required. Restart your site and the **Accessibility** tab will appear on every content node.
+No `appsettings.json` changes are required. Restart your site and the **Accessibility** tab will appear on every content node.
+
+**Optional:** To exclude document types or specific pages from site-wide scans, add the following to `appsettings.json`:
+
+```json
+"uAccessible": {
+  "ExcludedDocumentTypes": ["robotsTxt", "redirects"],
+  "ExcludedContentKeys": ["00000000-0000-0000-0000-000000000000"]
+}
+```
 
 ## Usage
 

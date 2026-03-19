@@ -1,399 +1,262 @@
-import {
-    LitElement,
-    css,
-    html,
-    customElement,
-    state,
-    nothing,
-} from '@umbraco-cms/backoffice/external/lit';
-import { UmbElementMixin } from '@umbraco-cms/backoffice/element-api';
-import { UMB_AUTH_CONTEXT } from '@umbraco-cms/backoffice/auth';
-import { UMB_MODAL_MANAGER_CONTEXT } from '@umbraco-cms/backoffice/modal';
-import { UMB_DOCUMENT_PICKER_MODAL } from '@umbraco-cms/backoffice/document';
-
-const API_BASE = '/umbraco/umbracommunityuaccessible/api/v1';
-
-type PageAuditSummary = {
-    key: string;
-    name?: string;
-    url?: string;
-    score: number;
-    grade: string;
-    violationCount: number;
-    criticalCount: number;
-    seriousCount: number;
-    moderateCount: number;
-    minorCount: number;
-    passingCount: number;
-    skipped: boolean;
-    skipReason?: string;
-    depth: number;
-    contentTypeAlias: string;
-    contentTypeIcon: string;
+import { LitElement as f, nothing as d, html as s, css as w, state as h, customElement as k } from "@umbraco-cms/backoffice/external/lit";
+import { UmbElementMixin as m } from "@umbraco-cms/backoffice/element-api";
+import { UMB_AUTH_CONTEXT as y } from "@umbraco-cms/backoffice/auth";
+import { UMB_MODAL_MANAGER_CONTEXT as $ } from "@umbraco-cms/backoffice/modal";
+import { UMB_DOCUMENT_PICKER_MODAL as M } from "@umbraco-cms/backoffice/document";
+var S = Object.defineProperty, C = Object.getOwnPropertyDescriptor, u = (t, a, o, r) => {
+  for (var l = r > 1 ? void 0 : r ? C(a, o) : a, i = t.length - 1, e; i >= 0; i--)
+    (e = t[i]) && (l = (r ? e(a, o, l) : e(l)) || l);
+  return r && l && S(a, o, l), l;
 };
-
-type SiteAuditResult = {
-    totalPages: number;
-    scannedPages: number;
-    skippedPages: number;
-    averageScore: number;
-    totalViolations: number;
-    pages: PageAuditSummary[];
-};
-
-type SiteAuditHistorySummary = {
-    index: number;
-    scannedAt: string;
-    rootName: string;
-    totalPages: number;
-    scannedPages: number;
-    skippedPages: number;
-    averageScore: number;
-    totalViolations: number;
-    totalCritical: number;
-    totalSerious: number;
-    totalModerate: number;
-    totalMinor: number;
-    totalPasses: number;
-    hasResult: boolean;
-};
-
-function gradeCircleColor(grade: string): string {
-    switch (grade) {
-        case 'A': return '#27ae60';
-        case 'B': return '#2ecc71';
-        case 'C': return '#f39c12';
-        case 'D': return '#e67e22';
-        case 'F': return '#e74c3c';
-        default:  return '#9ca3af';
-    }
+const v = "/umbraco/umbracommunityuaccessible/api/v1";
+function x(t) {
+  switch (t) {
+    case "A":
+      return "#27ae60";
+    case "B":
+      return "#2ecc71";
+    case "C":
+      return "#f39c12";
+    case "D":
+      return "#e67e22";
+    case "F":
+      return "#e74c3c";
+    default:
+      return "#9ca3af";
+  }
 }
-
-function gradeFromScore(score: number): string {
-    if (score >= 95) return 'A';
-    if (score >= 80) return 'B';
-    if (score >= 65) return 'C';
-    if (score >= 50) return 'D';
-    return 'F';
+function _(t) {
+  return t >= 95 ? "A" : t >= 80 ? "B" : t >= 65 ? "C" : t >= 50 ? "D" : "F";
 }
-
-// ── SVG icons ──────────────────────────────────────────────────────────────
-
-const svgPages = html`<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
+const z = s`<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
     stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" viewBox="0 0 24 24">
     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
     <path d="M14 3v4a1 1 0 0 0 1 1h4" />
     <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
     <path d="M9 13h6" /><path d="M9 17h4" />
-</svg>`;
-
-const svgScanned = html`<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
+</svg>`, H = s`<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
     stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
     <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
     <path d="M9 12l2 2l4 -4" />
-</svg>`;
-
-const svgScore = html`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+</svg>`, E = s`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
     <path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10" />
     <path d="M12 5v2" /><path d="M12 10v1" /><path d="M12 14v1" /><path d="M12 18v1" />
     <path d="M7 3v2" /><path d="M17 3v2" />
     <path d="M15 10.5v3a1.5 1.5 0 0 0 3 0v-3a1.5 1.5 0 0 0 -3 0" />
     <path d="M6 9h1.5a1.5 1.5 0 0 1 0 3h-.5h.5a1.5 1.5 0 0 1 0 3h-1.5" />
-</svg>`;
-
-const svgViolations = html`<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
+</svg>`, A = s`<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
     stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
     <path d="M12 9v4" />
     <path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.871l-8.106 -13.534a1.914 1.914 0 0 0 -3.274 0z" />
     <path d="M12 16h.01" />
-</svg>`;
-
-const svgSkipped = html`<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
+</svg>`, P = s`<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
     stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
     <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" />
     <path d="M12 9h.01" />
     <path d="M11 12h1v4h1" />
-</svg>`;
-
-const svgHistory = html`<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
+</svg>`, j = s`<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
     stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
     <path d="M12 8l0 4l2 2" />
     <path d="M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5" />
 </svg>`;
-
-@customElement('uaccessible-dashboard')
-export class uAccessibleDashboardElement extends UmbElementMixin(LitElement) {
-
-    @state() private _selectedKey: string | null = null;
-    @state() private _selectedName: string | null = null;
-    @state() private _scanning = false;
-    @state() private _scanInProgress = false;
-    @state() private _result: SiteAuditResult | null = null;
-    @state() private _error: string | null = null;
-    @state() private _sortBy: 'tree' | 'name' | 'score' | 'violations' = 'tree';
-    @state() private _sortAsc = true;
-    @state() private _resultsExpanded = true;
-    @state() private _siteHistory: SiteAuditHistorySummary[] = [];
-    @state() private _historyExpanded = false;
-    @state() private _historyLoading: number | null = null;
-    @state() private _historicalIndex: number | null = null;
-    @state() private _historicalDate: string | null = null;
-
-    private _modalManager?: typeof UMB_MODAL_MANAGER_CONTEXT.TYPE;
-    private _tokenProvider: (() => Promise<string | null | undefined>) | null = null;
-
-    override connectedCallback() {
-        super.connectedCallback();
-        this.consumeContext(UMB_AUTH_CONTEXT, (ctx) => {
-            this._tokenProvider = ctx?.getOpenApiConfiguration().token ?? null;
+let c = class extends m(f) {
+  constructor() {
+    super(...arguments), this._selectedKey = null, this._selectedName = null, this._scanning = !1, this._scanInProgress = !1, this._result = null, this._error = null, this._sortBy = "tree", this._sortAsc = !0, this._resultsExpanded = !0, this._siteHistory = [], this._historyExpanded = !1, this._historyLoading = null, this._historicalIndex = null, this._historicalDate = null, this._tokenProvider = null;
+  }
+  connectedCallback() {
+    super.connectedCallback(), this.consumeContext(y, (t) => {
+      this._tokenProvider = (t == null ? void 0 : t.getOpenApiConfiguration().token) ?? null;
+    }), this.consumeContext($, (t) => {
+      this._modalManager = t;
+    });
+  }
+  async _token() {
+    const t = this._tokenProvider ? await this._tokenProvider() : void 0;
+    return t ? { Authorization: `Bearer ${t}` } : {};
+  }
+  async _pickContent() {
+    var r, l, i;
+    if (!this._modalManager) return;
+    const a = await this._modalManager.open(this, M, {
+      data: { multiple: !1, pickableFilter: () => !0 }
+    }).onSubmit().catch(() => {
+    });
+    if (!((r = a == null ? void 0 : a.selection) != null && r.length)) return;
+    const o = a.selection[0];
+    if (o) {
+      this._selectedKey = o, this._selectedName = o, this._result = null, this._error = null, this._siteHistory = [], this._historicalDate = null, this._historicalIndex = null;
+      try {
+        const e = await this._token(), g = await fetch(`/umbraco/management/api/v1/document/${o}`, {
+          headers: { Accept: "application/json", ...e }
         });
-        this.consumeContext(UMB_MODAL_MANAGER_CONTEXT, (ctx) => {
-            this._modalManager = ctx;
-        });
-    }
-
-    private async _token(): Promise<Record<string, string>> {
-        const token = this._tokenProvider ? await this._tokenProvider() : undefined;
-        return token ? { Authorization: `Bearer ${token}` } : {};
-    }
-
-    private async _pickContent() {
-        if (!this._modalManager) return;
-        const modal = this._modalManager.open(this, UMB_DOCUMENT_PICKER_MODAL, {
-            data: { multiple: false, pickableFilter: () => true },
-        });
-        const value = await modal.onSubmit().catch(() => undefined);
-        if (!value?.selection?.length) return;
-        const selectedKey = value.selection[0] as unknown as string;
-        if (!selectedKey) return;
-        this._selectedKey = selectedKey;
-        this._selectedName = selectedKey;
-        this._result = null;
-        this._error = null;
-        this._siteHistory = [];
-        this._historicalDate = null;
-        this._historicalIndex = null;
-
-        try {
-            const headers = await this._token();
-            const res = await fetch(`/umbraco/management/api/v1/document/${selectedKey}`, {
-                headers: { Accept: 'application/json', ...headers },
-            });
-            if (res.ok) {
-                const doc = await res.json();
-                this._selectedName = doc?.variants?.[0]?.name ?? doc?.name ?? selectedKey;
-            }
-        } catch { /* non-critical */ }
-
-        await this._fetchSiteHistory();
-    }
-
-    private async _runScan() {
-        if (!this._selectedKey) return;
-        this._scanning = true;
-        this._scanInProgress = false;
-        this._result = null;
-        this._error = null;
-        this._historicalDate = null;
-        this._historicalIndex = null;
-        try {
-            const headers = await this._token();
-            const res = await fetch(`${API_BASE}/audit/tree/${this._selectedKey}`, {
-                headers: { Accept: 'application/json', ...headers },
-            });
-            if (res.status === 409) { this._scanInProgress = true; return; }
-            if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-            this._result = await res.json();
-            this._historyExpanded = false;
-            await this._fetchSiteHistory();
-        } catch (e: unknown) {
-            this._error = e instanceof Error ? e.message : 'An unexpected error occurred.';
-        } finally {
-            this._scanning = false;
+        if (g.ok) {
+          const p = await g.json();
+          this._selectedName = ((i = (l = p == null ? void 0 : p.variants) == null ? void 0 : l[0]) == null ? void 0 : i.name) ?? (p == null ? void 0 : p.name) ?? o;
         }
+      } catch {
+      }
+      await this._fetchSiteHistory();
     }
-
-    private async _fetchSiteHistory() {
-        if (!this._selectedKey) return;
-        try {
-            const headers = await this._token();
-            const res = await fetch(`${API_BASE}/audit/site-history/${this._selectedKey}`, {
-                headers: { Accept: 'application/json', ...headers },
-            });
-            if (res.ok) this._siteHistory = await res.json();
-        } catch { /* non-critical */ }
-    }
-
-    private async _loadHistoryEntry(index: number, scannedAt: string) {
-        if (!this._selectedKey) return;
-        this._historyLoading = index;
-        try {
-            const headers = await this._token();
-            const res = await fetch(`${API_BASE}/audit/site-history/${this._selectedKey}/${index}`, {
-                headers: { Accept: 'application/json', ...headers },
-            });
-            if (res.status === 404) {
-                this._error = 'This history entry has no stored report. It was recorded before full result storage was added. Run a new scan to capture a complete report.';
-                return;
-            }
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            this._result = await res.json();
-            this._historicalDate = scannedAt;
-            this._historicalIndex = index;
-            this._historyExpanded = false;
-        } catch (e: unknown) {
-            this._error = e instanceof Error ? e.message : 'Could not load historical scan.';
-        } finally { this._historyLoading = null; }
-    }
-
-    private async _deleteHistoryEntry(index: number) {
-        if (!this._selectedKey) return;
-        try {
-            const headers = await this._token();
-            await fetch(`${API_BASE}/audit/site-history/${this._selectedKey}/${index}`, {
-                method: 'DELETE', headers,
-            });
-            await this._fetchSiteHistory();
-            if (this._historicalIndex === index) {
-                this._result = null;
-                this._historicalDate = null;
-                this._historicalIndex = null;
-            }
-        } catch { /* silently ignore */ }
-    }
-
-    private async _clearHistory() {
-        if (!this._selectedKey) return;
-        try {
-            const headers = await this._token();
-            await fetch(`${API_BASE}/audit/site-history/${this._selectedKey}`, {
-                method: 'DELETE', headers,
-            });
-            this._siteHistory = [];
-            this._result = null;
-            this._historicalDate = null;
-            this._historicalIndex = null;
-        } catch { /* silently ignore */ }
-    }
-
-    private _sortedPages(): PageAuditSummary[] {
-        if (!this._result) return [];
-        if (this._sortBy === 'tree') return this._result.pages; // preserve server tree order
-        return [...this._result.pages].sort((a, b) => {
-            let cmp = 0;
-            if (this._sortBy === 'name')       cmp = (a.name ?? '').localeCompare(b.name ?? '');
-            if (this._sortBy === 'score')      cmp = a.score - b.score;
-            if (this._sortBy === 'violations') cmp = a.violationCount - b.violationCount;
-            return this._sortAsc ? cmp : -cmp;
+  }
+  async _runScan() {
+    if (this._selectedKey) {
+      this._scanning = !0, this._scanInProgress = !1, this._result = null, this._error = null, this._historicalDate = null, this._historicalIndex = null;
+      try {
+        const t = await this._token(), a = await fetch(`${v}/audit/tree/${this._selectedKey}`, {
+          headers: { Accept: "application/json", ...t }
         });
+        if (a.status === 409) {
+          this._scanInProgress = !0;
+          return;
+        }
+        if (!a.ok) throw new Error(`${a.status} ${a.statusText}`);
+        this._result = await a.json(), this._historyExpanded = !1, await this._fetchSiteHistory();
+      } catch (t) {
+        this._error = t instanceof Error ? t.message : "An unexpected error occurred.";
+      } finally {
+        this._scanning = !1;
+      }
     }
-
-    private _setSort(col: 'tree' | 'name' | 'score' | 'violations') {
-        if (this._sortBy === col) { this._sortAsc = !this._sortAsc; }
-        else { this._sortBy = col; this._sortAsc = col === 'name'; }
+  }
+  async _fetchSiteHistory() {
+    if (this._selectedKey)
+      try {
+        const t = await this._token(), a = await fetch(`${v}/audit/site-history/${this._selectedKey}`, {
+          headers: { Accept: "application/json", ...t }
+        });
+        a.ok && (this._siteHistory = await a.json());
+      } catch {
+      }
+  }
+  async _loadHistoryEntry(t, a) {
+    if (this._selectedKey) {
+      this._historyLoading = t;
+      try {
+        const o = await this._token(), r = await fetch(`${v}/audit/site-history/${this._selectedKey}/${t}`, {
+          headers: { Accept: "application/json", ...o }
+        });
+        if (r.status === 404) {
+          this._error = "This history entry has no stored report. It was recorded before full result storage was added. Run a new scan to capture a complete report.";
+          return;
+        }
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        this._result = await r.json(), this._historicalDate = a, this._historicalIndex = t, this._historyExpanded = !1;
+      } catch (o) {
+        this._error = o instanceof Error ? o.message : "Could not load historical scan.";
+      } finally {
+        this._historyLoading = null;
+      }
     }
-
-    /** Delta vs the scan before the current live result (index 1 after a fresh scan). */
-    private _delta(): { score: number; violations: number } | null {
-        if (!this._result || this._historicalDate) return null; // no delta for historical view
-        const prev = this._siteHistory[1]; // [0] = just-saved current, [1] = previous
-        if (!prev) return null;
-        return {
-            score:      Math.round(this._result.averageScore) - Math.round(prev.averageScore),
-            violations: this._result.totalViolations - prev.totalViolations,
+  }
+  async _deleteHistoryEntry(t) {
+    if (this._selectedKey)
+      try {
+        const a = await this._token();
+        await fetch(`${v}/audit/site-history/${this._selectedKey}/${t}`, {
+          method: "DELETE",
+          headers: a
+        }), await this._fetchSiteHistory(), this._historicalIndex === t && (this._result = null, this._historicalDate = null, this._historicalIndex = null);
+      } catch {
+      }
+  }
+  async _clearHistory() {
+    if (this._selectedKey)
+      try {
+        const t = await this._token();
+        await fetch(`${v}/audit/site-history/${this._selectedKey}`, {
+          method: "DELETE",
+          headers: t
+        }), this._siteHistory = [], this._result = null, this._historicalDate = null, this._historicalIndex = null;
+      } catch {
+      }
+  }
+  _sortedPages() {
+    return this._result ? this._sortBy === "tree" ? this._result.pages : [...this._result.pages].sort((t, a) => {
+      let o = 0;
+      return this._sortBy === "name" && (o = (t.name ?? "").localeCompare(a.name ?? "")), this._sortBy === "score" && (o = t.score - a.score), this._sortBy === "violations" && (o = t.violationCount - a.violationCount), this._sortAsc ? o : -o;
+    }) : [];
+  }
+  _setSort(t) {
+    this._sortBy === t ? this._sortAsc = !this._sortAsc : (this._sortBy = t, this._sortAsc = t === "name");
+  }
+  /** Delta vs the scan before the current live result (index 1 after a fresh scan). */
+  _delta() {
+    if (!this._result || this._historicalDate) return null;
+    const t = this._siteHistory[1];
+    return t ? {
+      score: Math.round(this._result.averageScore) - Math.round(t.averageScore),
+      violations: this._result.totalViolations - t.totalViolations
+    } : null;
+  }
+  _exportCsv() {
+    if (!this._result) return;
+    const t = [["Page", "URL", "Grade", "Score", "Violations", "Critical", "Serious", "Status"]];
+    for (const e of this._result.pages)
+      t.push([
+        `"${(e.name ?? "").replace(/"/g, '""')}"`,
+        `"${(e.url ?? "").replace(/"/g, '""')}"`,
+        e.skipped ? "" : e.grade,
+        e.skipped ? "" : String(e.score),
+        e.skipped ? "" : String(e.violationCount),
+        e.skipped ? "" : String(e.criticalCount),
+        e.skipped ? "" : String(e.seriousCount),
+        e.skipped ? `"Skipped: ${(e.skipReason ?? "").replace(/"/g, '""')}"` : "Scanned"
+      ]);
+    const a = t.map((e) => e.join(",")).join(`
+`), o = new Blob([a], { type: "text/csv;charset=utf-8;" }), r = URL.createObjectURL(o), l = document.createElement("a");
+    l.href = r;
+    const i = (/* @__PURE__ */ new Date()).toISOString().slice(0, 16).replace("T", "_").replace(":", "-");
+    l.download = `uAccessible-site-audit-${i}.csv`, l.click(), URL.revokeObjectURL(r);
+  }
+  async _exportHistoryCsv(t) {
+    if (this._selectedKey)
+      try {
+        const a = await this._token(), o = await fetch(`${v}/audit/site-history/${this._selectedKey}/${t}`, {
+          headers: { Accept: "application/json", ...a }
+        });
+        if (!o.ok) return;
+        const r = await o.json(), l = (/* @__PURE__ */ new Date()).toISOString().slice(0, 16).replace("T", "_").replace(":", "-"), i = [["Page", "URL", "Grade", "Score", "Violations", "Critical", "Serious", "Passes", "Status"]];
+        for (const n of r.pages)
+          i.push([
+            `"${(n.name ?? "").replace(/"/g, '""')}"`,
+            `"${(n.url ?? "").replace(/"/g, '""')}"`,
+            n.skipped ? "" : n.grade,
+            n.skipped ? "" : String(n.score),
+            n.skipped ? "" : String(n.violationCount),
+            n.skipped ? "" : String(n.criticalCount),
+            n.skipped ? "" : String(n.seriousCount),
+            n.skipped ? "" : String(n.passingCount),
+            n.skipped ? `"Skipped: ${(n.skipReason ?? "").replace(/"/g, '""')}"` : "Scanned"
+          ]);
+        const e = i.map((n) => n.join(",")).join(`
+`), g = new Blob([e], { type: "text/csv;charset=utf-8;" }), p = URL.createObjectURL(g), b = document.createElement("a");
+        b.href = p, b.download = `uAccessible-site-audit-${l}.csv`, b.click(), URL.revokeObjectURL(p);
+      } catch {
+      }
+  }
+  updated(t) {
+    var a;
+    if (t.has("_result") && this._result && !this._historicalDate) {
+      const o = (a = this.shadowRoot) == null ? void 0 : a.querySelectorAll(".count-up");
+      if (!o) return;
+      o.forEach((r) => {
+        const l = parseInt(r.dataset.target ?? "0", 10);
+        if (isNaN(l) || l === 0) return;
+        const i = 600, e = performance.now(), g = (p) => {
+          const b = Math.min((p - e) / i, 1), n = 1 - Math.pow(1 - b, 3);
+          r.textContent = String(Math.round(l * n)), b < 1 ? requestAnimationFrame(g) : r.textContent = String(l);
         };
+        requestAnimationFrame(g);
+      });
     }
-
-    private _exportCsv() {
-        if (!this._result) return;
-        const rows = [['Page', 'URL', 'Grade', 'Score', 'Violations', 'Critical', 'Serious', 'Status']];
-        for (const p of this._result.pages) {
-            rows.push([
-                `"${(p.name ?? '').replace(/"/g, '""')}"`,
-                `"${(p.url ?? '').replace(/"/g, '""')}"`,
-                p.skipped ? '' : p.grade,
-                p.skipped ? '' : String(p.score),
-                p.skipped ? '' : String(p.violationCount),
-                p.skipped ? '' : String(p.criticalCount),
-                p.skipped ? '' : String(p.seriousCount),
-                p.skipped ? `"Skipped: ${(p.skipReason ?? '').replace(/"/g, '""')}"` : 'Scanned',
-            ]);
-        }
-        const csv = rows.map(r => r.join(',')).join('\n');
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        const ts = new Date().toISOString().slice(0, 16).replace('T', '_').replace(':', '-');
-        a.download = `uAccessible-site-audit-${ts}.csv`;
-        a.click();
-        URL.revokeObjectURL(url);
-    }
-
-    private async _exportHistoryCsv(index: number) {
-        if (!this._selectedKey) return;
-        try {
-            const headers = await this._token();
-            const res = await fetch(`${API_BASE}/audit/site-history/${this._selectedKey}/${index}`, {
-                headers: { Accept: 'application/json', ...headers },
-            });
-            if (!res.ok) return;
-            const result: SiteAuditResult = await res.json();
-            const ts = new Date().toISOString().slice(0, 16).replace('T', '_').replace(':', '-');
-            const rows = [['Page', 'URL', 'Grade', 'Score', 'Violations', 'Critical', 'Serious', 'Passes', 'Status']];
-            for (const p of result.pages) {
-                rows.push([
-                    `"${(p.name ?? '').replace(/"/g, '""')}"`,
-                    `"${(p.url ?? '').replace(/"/g, '""')}"`,
-                    p.skipped ? '' : p.grade,
-                    p.skipped ? '' : String(p.score),
-                    p.skipped ? '' : String(p.violationCount),
-                    p.skipped ? '' : String(p.criticalCount),
-                    p.skipped ? '' : String(p.seriousCount),
-                    p.skipped ? '' : String(p.passingCount),
-                    p.skipped ? `"Skipped: ${(p.skipReason ?? '').replace(/"/g, '""')}"` : 'Scanned',
-                ]);
-            }
-            const csv = rows.map(r => r.join(',')).join('\n');
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `uAccessible-site-audit-${ts}.csv`;
-            a.click();
-            URL.revokeObjectURL(url);
-        } catch { /* silently ignore */ }
-    }
-
-    override updated(changedProps: Map<string, unknown>) {
-        if (changedProps.has('_result') && this._result && !this._historicalDate) {
-            // Animate count-up on stat values after a fresh scan
-            const els = this.shadowRoot?.querySelectorAll<HTMLElement>('.count-up');
-            if (!els) return;
-            els.forEach(el => {
-                const target = parseInt(el.dataset['target'] ?? '0', 10);
-                if (isNaN(target) || target === 0) return;
-                const duration = 600;
-                const start = performance.now();
-                const tick = (now: number) => {
-                    const t = Math.min((now - start) / duration, 1);
-                    const ease = 1 - Math.pow(1 - t, 3); // cubic ease-out
-                    el.textContent = String(Math.round(target * ease));
-                    if (t < 1) requestAnimationFrame(tick);
-                    else el.textContent = String(target);
-                };
-                requestAnimationFrame(tick);
-            });
-        }
-    }
-
-    override render() {
-        return html`
+  }
+  render() {
+    return s`
             <div class="layout">
                 <!-- ── Header ── -->
                 <div class="dash-header">
@@ -409,7 +272,7 @@ export class uAccessibleDashboardElement extends UmbElementMixin(LitElement) {
                 <!-- ── Picker + scan row ── -->
                 <div class="picker-row">
                     <div class="picker-field">
-                        ${this._selectedKey ? html`
+                        ${this._selectedKey ? s`
                             <div class="selected-node">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
                                     stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
@@ -419,10 +282,12 @@ export class uAccessibleDashboardElement extends UmbElementMixin(LitElement) {
                                 </svg>
                                 <span class="selected-node__name">${this._selectedName ?? this._selectedKey}</span>
                                 <button class="selected-node__clear"
-                                    @click=${() => { this._selectedKey = null; this._selectedName = null; this._result = null; this._siteHistory = []; this._historicalDate = null; this._historicalIndex = null; }}
+                                    @click=${() => {
+      this._selectedKey = null, this._selectedName = null, this._result = null, this._siteHistory = [], this._historicalDate = null, this._historicalIndex = null;
+    }}
                                     title="Clear selection">×</button>
                             </div>
-                        ` : html`<span class="picker-placeholder">No content node selected</span>`}
+                        ` : s`<span class="picker-placeholder">No content node selected</span>`}
                     </div>
                     <uui-button look="outline" @click=${this._pickContent} ?disabled=${this._scanning}>
                         Pick content node
@@ -430,29 +295,27 @@ export class uAccessibleDashboardElement extends UmbElementMixin(LitElement) {
                     <uui-button look="primary" color="positive"
                         @click=${this._runScan}
                         ?disabled=${!this._selectedKey || this._scanning}>
-                        ${this._scanning
-                            ? html`<uui-loader-circle></uui-loader-circle>&nbsp;Scanning…`
-                            : 'Scan subtree'}
+                        ${this._scanning ? s`<uui-loader-circle></uui-loader-circle>&nbsp;Scanning…` : "Scan subtree"}
                     </uui-button>
                 </div>
 
-                ${this._scanning ? html`
+                ${this._scanning ? s`
                     <uui-alert>
                         <p>Scanning all pages in sequence — this may take a while for large trees. Each page runs a full axe-core audit in a headless browser.</p>
                         <div class="scan-progress-track" style="margin-top: 8px;"><div class="scan-progress-fill"></div></div>
                     </uui-alert>
-                ` : nothing}
+                ` : d}
 
-                ${this._scanInProgress ? html`
+                ${this._scanInProgress ? s`
                     <uui-alert color="warning" headline="Scan already in progress">
                         Another editor is currently running a site-wide audit on this content tree. The result will appear in <strong>Scan history</strong> shortly — no need to scan again.
                     </uui-alert>
-                ` : nothing}
+                ` : d}
 
-                ${this._error ? html`<uui-alert color="danger">${this._error}</uui-alert>` : nothing}
+                ${this._error ? s`<uui-alert color="danger">${this._error}</uui-alert>` : d}
 
                 <!-- ── Historical context card ── -->
-                ${this._historicalDate ? html`
+                ${this._historicalDate ? s`
                     <div class="exec-card historical-card">
                         <div class="historical-card__header">
                             <svg class="historical-card__icon" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -465,57 +328,57 @@ export class uAccessibleDashboardElement extends UmbElementMixin(LitElement) {
                             <div class="historical-card__content">
                                 <span class="historical-card__label">Historical scan</span>
                                 <span class="historical-card__date">${new Date(this._historicalDate).toLocaleString()}</span>
-                                ${this._historicalIndex !== null ? html`
+                                ${this._historicalIndex !== null ? s`
                                     <span class="historical-card__meta">Entry ${this._historicalIndex + 1} of ${this._siteHistory.length} — not the latest result</span>
-                                ` : nothing}
+                                ` : d}
                             </div>
                             <uui-button look="primary" color="positive" compact @click=${this._runScan} ?disabled=${this._scanning}>
                                 Run fresh scan
                             </uui-button>
                         </div>
                     </div>
-                ` : nothing}
+                ` : d}
 
                 <!-- ── History card (shown whenever history exists) ── -->
                 ${this._renderSiteHistory()}
 
                 <!-- ── No result yet prompt ── -->
-                ${!this._result && !this._scanning && !this._error && this._selectedKey ? html`
+                ${!this._result && !this._scanning && !this._error && this._selectedKey ? s`
                     <uui-alert>
                         <p>
                             Click <strong>Scan subtree</strong> to audit all pages under this node.
-                            ${this._siteHistory.length > 0 ? html` Or <strong>load a past scan</strong> from history above.` : nothing}
+                            ${this._siteHistory.length > 0 ? s` Or <strong>load a past scan</strong> from history above.` : d}
                         </p>
                     </uui-alert>
-                ` : nothing}
+                ` : d}
 
-                ${!this._selectedKey && !this._scanning ? html`
+                ${!this._selectedKey && !this._scanning ? s`
                     <uui-alert>
                         <p>Pick a content node above to start a site-wide accessibility audit.</p>
                     </uui-alert>
-                ` : nothing}
+                ` : d}
 
-                ${this._result ? this._renderResults() : nothing}
+                ${this._result ? this._renderResults() : d}
             </div>
         `;
-    }
-
-    private _renderSiteHistory() {
-        if (!this._selectedKey || this._siteHistory.length === 0) return nothing;
-        return html`
+  }
+  _renderSiteHistory() {
+    return !this._selectedKey || this._siteHistory.length === 0 ? d : s`
             <div class="history-section">
                 <h4 class="section-heading section-heading--history">
-                    ${svgHistory}
+                    ${j}
                     Scan history
                     <span class="section-heading-count">
                         (<strong>${this._siteHistory.length}</strong>
-                        scan${this._siteHistory.length !== 1 ? 's' : ''})
+                        scan${this._siteHistory.length !== 1 ? "s" : ""})
                     </span>
                     <uui-button look="outline" compact class="history-toggle-btn"
-                        @click=${() => { this._historyExpanded = !this._historyExpanded; }}>
+                        @click=${() => {
+      this._historyExpanded = !this._historyExpanded;
+    }}>
                         <span class="btn-content">
-                            ${this._historyExpanded ? 'Collapse' : 'Show'}
-                            <svg class="btn-icon chevron-icon ${this._historyExpanded ? 'chevron-icon--up' : ''}"
+                            ${this._historyExpanded ? "Collapse" : "Show"}
+                            <svg class="btn-icon chevron-icon ${this._historyExpanded ? "chevron-icon--up" : ""}"
                                 xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
                                 stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -524,7 +387,7 @@ export class uAccessibleDashboardElement extends UmbElementMixin(LitElement) {
                         </span>
                     </uui-button>
                 </h4>
-                ${this._historyExpanded ? html`
+                ${this._historyExpanded ? s`
                     <div class="exec-card history-table-card">
                         <p class="exec-card__subtitle">Previous site-wide audits — shared across all editors, most recent first. Kept for up to 1 year (max 20 per root node). Click <strong>Load</strong> to view a past report.</p>
                         <table class="history-table">
@@ -544,38 +407,33 @@ export class uAccessibleDashboardElement extends UmbElementMixin(LitElement) {
                                 </tr>
                             </thead>
                             <tbody>
-                                ${this._siteHistory.map((h) => html`
-                                    <tr class="${h.index === 0 ? 'history-row--latest' : ''} ${this._historicalIndex === h.index ? 'history-row--active' : ''}">
-                                        <td>${new Date(h.scannedAt).toLocaleString()}</td>
-                                        <td>${h.scannedPages}/${h.totalPages}</td>
-                                        <td><span class="grade-circle" style="color: ${gradeCircleColor(gradeFromScore(h.averageScore))};">${gradeFromScore(h.averageScore)}</span></td>
-                                        <td><span class="score-val">${Math.round(h.averageScore)}/100</span></td>
-                                        <td><span class="count-badge count-badge--violations">${h.totalViolations}</span></td>
-                                        <td><span class="count-badge count-badge--critical">${h.totalCritical ?? 0}</span></td>
-                                        <td><span class="count-badge count-badge--serious">${h.totalSerious ?? 0}</span></td>
-                                        <td><span class="count-badge count-badge--moderate">${h.totalModerate ?? 0}</span></td>
-                                        <td><span class="count-badge count-badge--minor">${h.totalMinor ?? 0}</span></td>
-                                        <td><span class="count-badge count-badge--passes">${h.totalPasses ?? 0}</span></td>
+                                ${this._siteHistory.map((t) => s`
+                                    <tr class="${t.index === 0 ? "history-row--latest" : ""} ${this._historicalIndex === t.index ? "history-row--active" : ""}">
+                                        <td>${new Date(t.scannedAt).toLocaleString()}</td>
+                                        <td>${t.scannedPages}/${t.totalPages}</td>
+                                        <td><span class="grade-circle" style="color: ${x(_(t.averageScore))};">${_(t.averageScore)}</span></td>
+                                        <td><span class="score-val">${Math.round(t.averageScore)}/100</span></td>
+                                        <td><span class="count-badge count-badge--violations">${t.totalViolations}</span></td>
+                                        <td><span class="count-badge count-badge--critical">${t.totalCritical ?? 0}</span></td>
+                                        <td><span class="count-badge count-badge--serious">${t.totalSerious ?? 0}</span></td>
+                                        <td><span class="count-badge count-badge--moderate">${t.totalModerate ?? 0}</span></td>
+                                        <td><span class="count-badge count-badge--minor">${t.totalMinor ?? 0}</span></td>
+                                        <td><span class="count-badge count-badge--passes">${t.totalPasses ?? 0}</span></td>
                                         <td class="history-actions">
-                                            ${this._historyLoading === h.index
-                                                ? html`<uui-button look="${this._historicalIndex === h.index ? 'primary' : 'outline'}" compact class="history-load-btn" title="Loading…">
+                                            ${this._historyLoading === t.index ? s`<uui-button look="${this._historicalIndex === t.index ? "primary" : "outline"}" compact class="history-load-btn" title="Loading…">
                                                         <uui-loader-circle></uui-loader-circle>
-                                                      </uui-button>`
-                                                : (this._scanning || this._historyLoading !== null)
-                                                    ? html`<span class="history-action-disabled" title="Busy — please wait">
-                                                              <uui-button look="${this._historicalIndex === h.index ? 'primary' : 'outline'}" compact class="history-load-btn">
-                                                                  ${this._historicalIndex === h.index ? 'Loaded' : 'Load'}
+                                                      </uui-button>` : this._scanning || this._historyLoading !== null ? s`<span class="history-action-disabled" title="Busy — please wait">
+                                                              <uui-button look="${this._historicalIndex === t.index ? "primary" : "outline"}" compact class="history-load-btn">
+                                                                  ${this._historicalIndex === t.index ? "Loaded" : "Load"}
                                                               </uui-button>
-                                                            </span>`
-                                                    : html`<uui-button look="${this._historicalIndex === h.index ? 'primary' : 'outline'}" compact
+                                                            </span>` : s`<uui-button look="${this._historicalIndex === t.index ? "primary" : "outline"}" compact
                                                               class="history-load-btn"
-                                                              @click=${() => this._loadHistoryEntry(h.index, h.scannedAt)}
+                                                              @click=${() => this._loadHistoryEntry(t.index, t.scannedAt)}
                                                               title="Load this scan">
-                                                              ${this._historicalIndex === h.index ? 'Loaded' : 'Load'}
-                                                           </uui-button>`
-                                            }
+                                                              ${this._historicalIndex === t.index ? "Loaded" : "Load"}
+                                                           </uui-button>`}
                                             <uui-button look="outline" compact
-                                                @click=${() => this._exportHistoryCsv(h.index)}
+                                                @click=${() => this._exportHistoryCsv(t.index)}
                                                 title="Export this scan as CSV">
                                                 <span class="btn-content">
                                                     <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
@@ -588,7 +446,7 @@ export class uAccessibleDashboardElement extends UmbElementMixin(LitElement) {
                                                 </span>
                                             </uui-button>
                                             <uui-button look="primary" compact color="danger"
-                                                @click=${() => this._deleteHistoryEntry(h.index)}
+                                                @click=${() => this._deleteHistoryEntry(t.index)}
                                                 title="Delete this entry">Delete</uui-button>
                                         </td>
                                     </tr>
@@ -601,73 +459,66 @@ export class uAccessibleDashboardElement extends UmbElementMixin(LitElement) {
                             </uui-button>
                         </div>
                     </div>
-                ` : nothing}
+                ` : d}
             </div>
         `;
-    }
-
-    private _renderResults() {
-        const r = this._result!;
-        const pages = this._sortedPages();
-        const avgScore = Math.round(r.averageScore);
-        const avgGrade = gradeFromScore(avgScore);
-        const avgColor = { A: '#1a7a4a', B: '#1a6b2a', C: '#b7770d', D: '#d35400', F: '#c0392b' }[avgGrade] ?? '#6b7280';
-        const delta = this._delta();
-
-        return html`
+  }
+  _renderResults() {
+    const t = this._result, a = this._sortedPages(), o = Math.round(t.averageScore), r = _(o), l = { A: "#1a7a4a", B: "#1a6b2a", C: "#b7770d", D: "#d35400", F: "#c0392b" }[r] ?? "#6b7280", i = this._delta();
+    return s`
             <!-- ── Stat cards ── -->
             <div class="stats-row">
                 <div class="stat-card stat-card--violations">
-                    <div class="stat-card__icon">${svgViolations}</div>
+                    <div class="stat-card__icon">${A}</div>
                     <div class="stat-card__info">
                         <div class="stat-card__value-row">
-                            <span class="stat-card__value count-up" data-target="${r.totalViolations}">${r.totalViolations}</span>
-                            ${delta && delta.violations !== 0 ? html`
-                                <span class="delta-badge ${delta.violations > 0 ? 'delta-badge--down' : 'delta-badge--up'}">
-                                    ${delta.violations > 0 ? '▲' : '▼'}${Math.abs(delta.violations)}
+                            <span class="stat-card__value count-up" data-target="${t.totalViolations}">${t.totalViolations}</span>
+                            ${i && i.violations !== 0 ? s`
+                                <span class="delta-badge ${i.violations > 0 ? "delta-badge--down" : "delta-badge--up"}">
+                                    ${i.violations > 0 ? "▲" : "▼"}${Math.abs(i.violations)}
                                 </span>
-                            ` : nothing}
+                            ` : d}
                         </div>
                         <span class="stat-card__label">Total violations</span>
                     </div>
                 </div>
                 <div class="stat-card stat-card--pages">
-                    <div class="stat-card__icon">${svgPages}</div>
+                    <div class="stat-card__icon">${z}</div>
                     <div class="stat-card__info">
-                        <span class="stat-card__value count-up" data-target="${r.totalPages}">${r.totalPages}</span>
+                        <span class="stat-card__value count-up" data-target="${t.totalPages}">${t.totalPages}</span>
                         <span class="stat-card__label">Pages found</span>
                     </div>
                 </div>
                 <div class="stat-card stat-card--scanned">
-                    <div class="stat-card__icon">${svgScanned}</div>
+                    <div class="stat-card__icon">${H}</div>
                     <div class="stat-card__info">
-                        <span class="stat-card__value count-up" data-target="${r.scannedPages}">${r.scannedPages}</span>
+                        <span class="stat-card__value count-up" data-target="${t.scannedPages}">${t.scannedPages}</span>
                         <span class="stat-card__label">Pages scanned</span>
                     </div>
                 </div>
-                <div class="stat-card stat-card--score" style="--score-color: ${avgColor}">
-                    <div class="stat-card__icon">${svgScore}</div>
+                <div class="stat-card stat-card--score" style="--score-color: ${l}">
+                    <div class="stat-card__icon">${E}</div>
                     <div class="stat-card__info">
                         <div class="stat-card__value-row">
-                            <span class="stat-card__value stat-card__value--score count-up" data-target="${avgScore}">${avgScore}</span>
-                            ${delta && delta.score !== 0 ? html`
-                                <span class="delta-badge ${delta.score > 0 ? 'delta-badge--up' : 'delta-badge--down'}">
-                                    ${delta.score > 0 ? '▲' : '▼'}${Math.abs(delta.score)}
+                            <span class="stat-card__value stat-card__value--score count-up" data-target="${o}">${o}</span>
+                            ${i && i.score !== 0 ? s`
+                                <span class="delta-badge ${i.score > 0 ? "delta-badge--up" : "delta-badge--down"}">
+                                    ${i.score > 0 ? "▲" : "▼"}${Math.abs(i.score)}
                                 </span>
-                            ` : nothing}
+                            ` : d}
                         </div>
                         <span class="stat-card__label">Average score</span>
                     </div>
                 </div>
-                ${r.skippedPages > 0 ? html`
+                ${t.skippedPages > 0 ? s`
                     <div class="stat-card stat-card--skipped">
-                        <div class="stat-card__icon">${svgSkipped}</div>
+                        <div class="stat-card__icon">${P}</div>
                         <div class="stat-card__info">
-                            <span class="stat-card__value">${r.skippedPages}</span>
+                            <span class="stat-card__value">${t.skippedPages}</span>
                             <span class="stat-card__label">Skipped</span>
                         </div>
                     </div>
-                ` : nothing}
+                ` : d}
             </div>
 
             <!-- ── Page results exec-card ── -->
@@ -681,7 +532,7 @@ export class uAccessibleDashboardElement extends UmbElementMixin(LitElement) {
                         <path d="M9 12l2 2l4 -4" />
                     </svg>
                     Page results
-                    <span class="results-card__count">${r.scannedPages} scanned${r.skippedPages > 0 ? `, ${r.skippedPages} skipped` : ''}</span>
+                    <span class="results-card__count">${t.scannedPages} scanned${t.skippedPages > 0 ? `, ${t.skippedPages} skipped` : ""}</span>
                     <div style="margin-left: auto; display: flex; gap: var(--uui-size-space-2); flex-shrink: 0;">
                         <uui-button look="outline" compact @click=${this._exportCsv}>
                             <span class="btn-content">
@@ -696,10 +547,12 @@ export class uAccessibleDashboardElement extends UmbElementMixin(LitElement) {
                             </span>
                         </uui-button>
                         <uui-button look="primary" compact
-                            @click=${() => { this._resultsExpanded = !this._resultsExpanded; }}>
+                            @click=${() => {
+      this._resultsExpanded = !this._resultsExpanded;
+    }}>
                             <span class="btn-content">
-                                ${this._resultsExpanded ? 'Collapse' : 'Show'}
-                                <svg class="btn-icon chevron-icon ${this._resultsExpanded ? 'chevron-icon--up' : ''}"
+                                ${this._resultsExpanded ? "Collapse" : "Show"}
+                                <svg class="btn-icon chevron-icon ${this._resultsExpanded ? "chevron-icon--up" : ""}"
                                     xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
                                     stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -710,18 +563,18 @@ export class uAccessibleDashboardElement extends UmbElementMixin(LitElement) {
                     </div>
                 </h4>
 
-                ${this._resultsExpanded ? html`
+                ${this._resultsExpanded ? s`
                     <uui-table>
                         <uui-table-head>
-                            <uui-table-head-cell class="sortable col-name" @click=${() => this._setSort('name')}>
-                                Page ${this._sortBy === 'name' ? (this._sortAsc ? '↑' : '↓') : ''}
+                            <uui-table-head-cell class="sortable col-name" @click=${() => this._setSort("name")}>
+                                Page ${this._sortBy === "name" ? this._sortAsc ? "↑" : "↓" : ""}
                             </uui-table-head-cell>
                             <uui-table-head-cell class="col-grade">Grade</uui-table-head-cell>
-                            <uui-table-head-cell class="sortable col-score" @click=${() => this._setSort('score')}>
-                                Score ${this._sortBy === 'score' ? (this._sortAsc ? '↑' : '↓') : ''}
+                            <uui-table-head-cell class="sortable col-score" @click=${() => this._setSort("score")}>
+                                Score ${this._sortBy === "score" ? this._sortAsc ? "↑" : "↓" : ""}
                             </uui-table-head-cell>
-                            <uui-table-head-cell class="sortable col-violations" @click=${() => this._setSort('violations')}>
-                                Violations ${this._sortBy === 'violations' ? (this._sortAsc ? '↑' : '↓') : ''}
+                            <uui-table-head-cell class="sortable col-violations" @click=${() => this._setSort("violations")}>
+                                Violations ${this._sortBy === "violations" ? this._sortAsc ? "↑" : "↓" : ""}
                             </uui-table-head-cell>
                             <uui-table-head-cell class="col-impact col-impact--critical">Critical</uui-table-head-cell>
                             <uui-table-head-cell class="col-impact col-impact--serious">Serious</uui-table-head-cell>
@@ -732,17 +585,17 @@ export class uAccessibleDashboardElement extends UmbElementMixin(LitElement) {
                             <uui-table-head-cell class="col-actions"></uui-table-head-cell>
                         </uui-table-head>
 
-                        ${pages.map(p => p.skipped ? html`
+                        ${a.map((e) => e.skipped ? s`
                             <uui-table-row class="row-skipped">
                                 <uui-table-cell class="col-name cell-name">
-                                    <div class="page-name-cell" style="padding-left: ${p.depth * 18}px">
-                                        ${p.depth > 0 ? html`<svg class="tree-arrow" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 16 16"><path d="M4 2v8h9"/></svg>` : nothing}
-                                        <umb-icon name="${p.contentTypeIcon}" class="doctype-icon"></umb-icon>
+                                    <div class="page-name-cell" style="padding-left: ${e.depth * 18}px">
+                                        ${e.depth > 0 ? s`<svg class="tree-arrow" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 16 16"><path d="M4 2v8h9"/></svg>` : d}
+                                        <umb-icon name="${e.contentTypeIcon}" class="doctype-icon"></umb-icon>
                                         <span class="page-node-link"
-                                            @click=${() => history.pushState(null, '', `/umbraco/section/content/workspace/document/${p.key}`)}>
-                                            ${p.name ?? p.key}
+                                            @click=${() => history.pushState(null, "", `/umbraco/section/content/workspace/document/${e.key}`)}>
+                                            ${e.name ?? e.key}
                                         </span>
-                                        <em class="skip-reason">${p.skipReason}</em>
+                                        <em class="skip-reason">${e.skipReason}</em>
                                     </div>
                                 </uui-table-cell>
                                 <uui-table-cell class="col-grade"><span class="na-badge">N/A</span></uui-table-cell>
@@ -755,8 +608,8 @@ export class uAccessibleDashboardElement extends UmbElementMixin(LitElement) {
                                 <uui-table-cell class="col-passes"><span class="na-text">—</span></uui-table-cell>
                                 <uui-table-cell class="col-url"><span class="not-published">Not published</span></uui-table-cell>
                                 <uui-table-cell class="col-actions">
-                                    <a href="/umbraco/section/content/workspace/document/edit/${p.key}/invariant/view/uaccessible" class="workspace-link-btn" title="View page results in workspace"
-                                        @click=${() => sessionStorage.setItem('uaccessible:autoload', p.key)}>
+                                    <a href="/umbraco/section/content/workspace/document/edit/${e.key}/invariant/view/uaccessible" class="workspace-link-btn" title="View page results in workspace"
+                                        @click=${() => sessionStorage.setItem("uaccessible:autoload", e.key)}>
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
                                             stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
                                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -768,47 +621,47 @@ export class uAccessibleDashboardElement extends UmbElementMixin(LitElement) {
                                     </a>
                                 </uui-table-cell>
                             </uui-table-row>
-                        ` : html`
-                            <uui-table-row class="${p.criticalCount > 0 ? 'row-critical' : p.seriousCount > 0 ? 'row-serious' : ''}">
+                        ` : s`
+                            <uui-table-row class="${e.criticalCount > 0 ? "row-critical" : e.seriousCount > 0 ? "row-serious" : ""}">
                                 <uui-table-cell class="col-name cell-name">
-                                    <div class="page-name-cell" style="padding-left: ${p.depth * 18}px">
-                                        ${p.depth > 0 ? html`<svg class="tree-arrow" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 16 16"><path d="M4 2v8h9"/></svg>` : nothing}
-                                        <umb-icon name="${p.contentTypeIcon}" class="doctype-icon"></umb-icon>
-                                        <a href="/umbraco/section/content/workspace/document/${p.key}" class="page-node-link">
-                                            ${p.name ?? p.key}
+                                    <div class="page-name-cell" style="padding-left: ${e.depth * 18}px">
+                                        ${e.depth > 0 ? s`<svg class="tree-arrow" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 16 16"><path d="M4 2v8h9"/></svg>` : d}
+                                        <umb-icon name="${e.contentTypeIcon}" class="doctype-icon"></umb-icon>
+                                        <a href="/umbraco/section/content/workspace/document/${e.key}" class="page-node-link">
+                                            ${e.name ?? e.key}
                                         </a>
                                     </div>
                                 </uui-table-cell>
                                 <uui-table-cell class="col-grade">
-                                    <span class="grade-circle" style="color: ${gradeCircleColor(p.grade)};">${p.grade}</span>
+                                    <span class="grade-circle" style="color: ${x(e.grade)};">${e.grade}</span>
                                 </uui-table-cell>
                                 <uui-table-cell class="col-score">
-                                    <span class="score-val">${p.score}/100</span>
+                                    <span class="score-val">${e.score}/100</span>
                                 </uui-table-cell>
                                 <uui-table-cell class="col-violations">
-                                    <span class="count-badge count-badge--violations">${p.violationCount}</span>
+                                    <span class="count-badge count-badge--violations">${e.violationCount}</span>
                                 </uui-table-cell>
                                 <uui-table-cell class="col-impact">
-                                    <span class="count-badge count-badge--critical">${p.criticalCount}</span>
+                                    <span class="count-badge count-badge--critical">${e.criticalCount}</span>
                                 </uui-table-cell>
                                 <uui-table-cell class="col-impact">
-                                    <span class="count-badge count-badge--serious">${p.seriousCount}</span>
+                                    <span class="count-badge count-badge--serious">${e.seriousCount}</span>
                                 </uui-table-cell>
                                 <uui-table-cell class="col-impact">
-                                    <span class="count-badge count-badge--moderate">${p.moderateCount ?? 0}</span>
+                                    <span class="count-badge count-badge--moderate">${e.moderateCount ?? 0}</span>
                                 </uui-table-cell>
                                 <uui-table-cell class="col-impact">
-                                    <span class="count-badge count-badge--minor">${p.minorCount ?? 0}</span>
+                                    <span class="count-badge count-badge--minor">${e.minorCount ?? 0}</span>
                                 </uui-table-cell>
                                 <uui-table-cell class="col-passes">
-                                    <span class="count-badge count-badge--passes">${p.passingCount ?? 0}</span>
+                                    <span class="count-badge count-badge--passes">${e.passingCount ?? 0}</span>
                                 </uui-table-cell>
                                 <uui-table-cell class="col-url">
-                                    ${p.url ? html`<a href="${p.url}" target="_blank" rel="noopener noreferrer" class="page-link">${p.url}</a>` : '—'}
+                                    ${e.url ? s`<a href="${e.url}" target="_blank" rel="noopener noreferrer" class="page-link">${e.url}</a>` : "—"}
                                 </uui-table-cell>
                                 <uui-table-cell class="col-actions">
-                                    <a href="/umbraco/section/content/workspace/document/edit/${p.key}/invariant/view/uaccessible" class="workspace-link-btn" title="View page results in workspace"
-                                        @click=${() => sessionStorage.setItem('uaccessible:autoload', p.key)}>
+                                    <a href="/umbraco/section/content/workspace/document/edit/${e.key}/invariant/view/uaccessible" class="workspace-link-btn" title="View page results in workspace"
+                                        @click=${() => sessionStorage.setItem("uaccessible:autoload", e.key)}>
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
                                             stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
                                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -822,13 +675,13 @@ export class uAccessibleDashboardElement extends UmbElementMixin(LitElement) {
                             </uui-table-row>
                         `)}
                     </uui-table>
-                ` : nothing}
+                ` : d}
             </div>
         `;
-    }
-
-    static override styles = [
-        css`
+  }
+};
+c.styles = [
+  w`
             :host { display: block; padding: var(--uui-size-layout-1); }
 
             .layout { display: flex; flex-direction: column; gap: var(--uui-size-layout-1); }
@@ -1080,13 +933,56 @@ export class uAccessibleDashboardElement extends UmbElementMixin(LitElement) {
             .btn-icon { width: 14px; height: 14px; }
             .chevron-icon { transition: transform 0.2s ease; }
             .chevron-icon--up { transform: rotate(180deg); }
-        `,
-    ];
-}
-
-export default uAccessibleDashboardElement;
-declare global {
-    interface HTMLElementTagNameMap {
-        'uaccessible-dashboard': uAccessibleDashboardElement;
-    }
-}
+        `
+];
+u([
+  h()
+], c.prototype, "_selectedKey", 2);
+u([
+  h()
+], c.prototype, "_selectedName", 2);
+u([
+  h()
+], c.prototype, "_scanning", 2);
+u([
+  h()
+], c.prototype, "_scanInProgress", 2);
+u([
+  h()
+], c.prototype, "_result", 2);
+u([
+  h()
+], c.prototype, "_error", 2);
+u([
+  h()
+], c.prototype, "_sortBy", 2);
+u([
+  h()
+], c.prototype, "_sortAsc", 2);
+u([
+  h()
+], c.prototype, "_resultsExpanded", 2);
+u([
+  h()
+], c.prototype, "_siteHistory", 2);
+u([
+  h()
+], c.prototype, "_historyExpanded", 2);
+u([
+  h()
+], c.prototype, "_historyLoading", 2);
+u([
+  h()
+], c.prototype, "_historicalIndex", 2);
+u([
+  h()
+], c.prototype, "_historicalDate", 2);
+c = u([
+  k("uaccessible-dashboard")
+], c);
+const R = c;
+export {
+  R as default,
+  c as uAccessibleDashboardElement
+};
+//# sourceMappingURL=dashboard.element-0vBR6oWt.js.map

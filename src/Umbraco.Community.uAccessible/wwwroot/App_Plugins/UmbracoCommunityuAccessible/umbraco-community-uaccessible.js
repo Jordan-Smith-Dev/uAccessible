@@ -10,7 +10,7 @@ const e = [
     name: "uAccessible Workspace View",
     alias: "Umbraco.Community.uAccessible.WorkspaceView",
     type: "workspaceView",
-    js: () => import("./workspace-view.element-C6gj0lCG.js"),
+    js: () => import("./workspace-view.element-B4zzmSwc.js"),
     weight: 90,
     meta: {
       label: "uAccessible",
@@ -25,10 +25,28 @@ const e = [
     ]
   }
 ], i = [
+  {
+    name: "uAccessible Dashboard",
+    alias: "Umbraco.Community.uAccessible.Dashboard",
+    type: "dashboard",
+    js: () => import("./dashboard.element-0vBR6oWt.js"),
+    meta: {
+      label: "uAccessible",
+      pathname: "uaccessible"
+    },
+    conditions: [
+      {
+        alias: "Umb.Condition.SectionAlias",
+        match: "Umb.Section.Content"
+      }
+    ]
+  }
+], a = [
   ...e,
-  ...s
+  ...s,
+  ...i
 ];
 export {
-  i as manifests
+  a as manifests
 };
 //# sourceMappingURL=umbraco-community-uaccessible.js.map
